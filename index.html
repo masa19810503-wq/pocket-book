@@ -142,21 +142,29 @@
   .card-body { padding: 14px; }
 
   /* ── Tables ── */
-  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tbl-wrap {
+    overflow-x: auto; overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 65vh;
+    border-radius: 6px;
+    border: 1px solid #c5d3e8;
+  }
   table { width: 100%; border-collapse: collapse; min-width: 280px; }
   th {
-    background: #e8eef7; color: var(--primary);
-    font-size: 11px; font-weight: 700; padding: 7px 8px;
-    text-align: center; border: 1px solid #c5d3e8;
+    position: sticky; top: 0; z-index: 2;
+    background: #dce6f4; color: var(--primary);
+    font-size: 11px; font-weight: 700; padding: 8px 10px;
+    text-align: center; border: 1px solid #b0c4de;
     white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,.08);
   }
   td {
-    font-size: 12px; padding: 7px 8px;
+    font-size: 12px; padding: 7px 10px;
     text-align: center; border: 1px solid #e2e8f0;
     white-space: nowrap;
   }
-  tr:nth-child(even) td { background: #f8f9fc; }
-  tr:hover td { background: #eef3fb; }
+  tr:nth-child(even) td { background: #f4f7fc; }
+  tr:hover td { background: #e8f0fb; }
 
   /* ── Info items ── */
   .info-item {
