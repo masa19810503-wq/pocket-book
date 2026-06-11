@@ -265,6 +265,9 @@
   <div class="nav-item" onclick="showPage('bolt')" id="nav-bolt">
     <span class="icon">🔩</span><span>ボルト</span>
   </div>
+  <div class="nav-item" onclick="showPage('tap')" id="nav-tap">
+    <span class="icon">🔧</span><span>タップ</span>
+  </div>
 </nav>
 
 <!-- Main -->
@@ -320,6 +323,11 @@
         <span class="sc-icon">🔩</span>
         <span class="sc-title">工具口幅・ボルト径</span>
         <span class="sc-sub">メートルねじ・ウィットねじ</span>
+      </div>
+      <div class="section-card" onclick="showPage('tap')">
+        <span class="sc-icon">🔧</span>
+        <span class="sc-title">タップ下穴</span>
+        <span class="sc-sub">M・UNC・UNF・W・管用</span>
       </div>
     </div>
   </div>
@@ -1309,6 +1317,149 @@
     </div>
   </div>
 
+  <!-- ━━ タップ下穴 ━━ -->
+  <div class="page" id="page-tap">
+    <div class="page-title">🔧 タップ下穴寸法表</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'tap','mc')">M並目</button>
+      <button class="tab-btn" onclick="switchTab(this,'tap','mf')">M細目</button>
+      <button class="tab-btn" onclick="switchTab(this,'tap','unc')">UNC</button>
+      <button class="tab-btn" onclick="switchTab(this,'tap','unf')">UNF</button>
+      <button class="tab-btn" onclick="switchTab(this,'tap','w')">W</button>
+      <button class="tab-btn" onclick="switchTab(this,'tap','rc')">Rc(PT)</button>
+      <button class="tab-btn" onclick="switchTab(this,'tap','rp')">Rp(PS)</button>
+      <button class="tab-btn" onclick="switchTab(this,'tap','g')">G(PF)</button>
+    </div>
+
+    <!-- M並目 -->
+    <div class="tab-pane active" id="tap-tab-mc">
+      <div class="content-card">
+        <div class="card-header">メートルねじ M（並目）　JIS B 0205　単位：mm</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">日本で最も一般的な標準ねじ（ねじ山角度：60°）　使用工具：メートルタップ</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>呼び</th><th>ピッチ</th><th>下穴サイズ</th></tr></thead>
+              <tbody id="tap-mc-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M細目 -->
+    <div class="tab-pane" id="tap-tab-mf">
+      <div class="content-card">
+        <div class="card-header">メートルねじ M（細目）　JIS B 0207　単位：mm</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">精密用途・スペース制約に使用（ねじ山角度：60°）　使用工具：メートルタップ</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>呼び</th><th>ピッチ</th><th>下穴サイズ</th></tr></thead>
+              <tbody id="tap-mf-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNC -->
+    <div class="tab-pane" id="tap-tab-unc">
+      <div class="content-card">
+        <div class="card-header">ユニファイねじ UNC（並目）　JIS B 0206　単位：mm</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">アメリカで広く使われる標準ねじ。ピッチは山数で表示（ねじ山角度：60°）　使用工具：ユニファイタップ</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>呼び</th><th>山数（ピッチmm）</th><th>下穴サイズ</th></tr></thead>
+              <tbody id="tap-unc-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNF -->
+    <div class="tab-pane" id="tap-tab-unf">
+      <div class="content-card">
+        <div class="card-header">ユニファイねじ UNF（細目）　JIS B 0208　単位：mm</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">UNCより細かいピッチで高い保持力が必要な箇所に使用（ねじ山角度：60°）　使用工具：ユニファイタップ</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>呼び</th><th>山数（ピッチmm）</th><th>下穴サイズ</th></tr></thead>
+              <tbody id="tap-unf-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- W -->
+    <div class="tab-pane" id="tap-tab-w">
+      <div class="content-card">
+        <div class="card-header">ウィットねじ W　非JIS　単位：mm</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">イギリス規格。建築や水道配管に多く使用（規格は非JIS、ねじ山角度：55°）　使用工具：ウィットタップ</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>呼び</th><th>山数（ピッチmm）</th><th>下穴サイズ</th></tr></thead>
+              <tbody id="tap-w-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rc(PT) -->
+    <div class="tab-pane" id="tap-tab-rc">
+      <div class="content-card">
+        <div class="card-header">管用テーパねじ Rc（PT）　JIS B 0203　単位：mm</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">流体や気体の配管接続に使用。止め機能を持つ耐密用（旧称：PT、ねじ山角度：55°）　使用工具：管用テーパタップ</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>呼び</th><th>山数（ピッチmm）</th><th>下穴サイズ</th></tr></thead>
+              <tbody id="tap-rc-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rp(PS) -->
+    <div class="tab-pane" id="tap-tab-rp">
+      <div class="content-card">
+        <div class="card-header">管用平行ねじ Rp（PS）　JIS B 0203　単位：mm</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">R（テーパーおねじ）との組合せで使う耐密用（旧称：PS、ねじ山角度：55°）　使用工具：管用平行タップ</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>呼び</th><th>山数（ピッチmm）</th><th>下穴サイズ</th></tr></thead>
+              <tbody id="tap-rp-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- G(PF) -->
+    <div class="tab-pane" id="tap-tab-g">
+      <div class="content-card">
+        <div class="card-header">管用平行ねじ G（PF）　JIS B 0202　単位：mm</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">基本G規格のおねじと同じねじで、パッキン使用により止水する配管接続用（旧称：PF、ねじ山角度：55°）　使用工具：管用平行タップ</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>呼び</th><th>山数（ピッチmm）</th><th>下穴サイズ</th></tr></thead>
+              <tbody id="tap-g-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /main -->
 
 <script>
@@ -2053,6 +2204,187 @@ document.getElementById('bolt-metric-tbody').innerHTML = rows(BOLT_METRIC);
 document.getElementById('bolt-whit-tbody').innerHTML = rows(BOLT_WHIT);
 indexData('工具口幅・ボルト径（メートル）','',BOLT_METRIC,['ボルト径','六角','小形六角','重力六角','六角穴付','六角穴付止めねじ']);
 indexData('工具口幅・ボルト径（ウィット）','',BOLT_WHIT,['ボルト径','六角ボルト・ナット']);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// タップ下穴寸法表
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// メートルねじ 並目 [呼び, ピッチ, 下穴]
+const TAP_MC = [
+  ['M1',   0.25, 0.75],
+  ['M1.2', 0.25, 0.95],
+  ['M1.4', 0.3,  1.1],
+  ['M1.6', 0.35, 1.25],
+  ['M1.8', 0.35, 1.45],
+  ['M2',   0.4,  1.6],
+  ['M2.5', 0.45, 2.05],
+  ['M3',   0.5,  2.5],
+  ['M3.5', 0.6,  2.9],
+  ['M4',   0.7,  3.3],
+  ['M5',   0.8,  4.2],
+  ['M6',   1.0,  5.0],
+  ['M8',   1.25, 6.8],
+  ['M10',  1.5,  8.5],
+  ['M12',  1.75, 10.2],
+  ['M14',  2.0,  12.0],
+  ['M16',  2.0,  14.0],
+  ['M18',  2.5,  15.5],
+  ['M20',  2.5,  17.5],
+  ['M22',  2.5,  19.5],
+  ['M24',  3.0,  21.0],
+  ['M27',  3.0,  24.0],
+  ['M30',  3.5,  26.5],
+  ['M33',  3.5,  29.5],
+  ['M36',  4.0,  32.0],
+  ['M39',  4.0,  35.0],
+  ['M42',  4.5,  37.5],
+  ['M45',  4.5,  40.5],
+  ['M48',  5.0,  43.0],
+  ['M52',  5.0,  47.0],
+  ['M56',  5.5,  50.5],
+];
+
+// メートルねじ 細目 [呼び, ピッチ, 下穴]
+const TAP_MF = [
+  ['M2',   0.25, 1.8],
+  ['M3',   0.35, 2.65],
+  ['M3.5', 0.35, 3.15],
+  ['M4',   0.5,  3.5],
+  ['M4.5', 0.5,  4.0],
+  ['M5',   0.5,  4.5],
+  ['M6',   0.75, 5.2],
+  ['M7',   0.75, 6.2],
+  ['M8',   1.0,  7.0],
+  ['M8',   0.75, 7.2],
+  ['M10',  1.25, 8.8],
+  ['M10',  1.0,  9.0],
+  ['M10',  0.75, 9.2],
+  ['M12',  1.5,  10.5],
+  ['M12',  1.25, 10.8],
+  ['M12',  1.0,  11.0],
+  ['M14',  1.5,  12.9],
+  ['M14',  1.0,  13.0],
+  ['M16',  1.5,  14.5],
+  ['M18',  1.5,  16.5],
+  ['M20',  1.5,  18.5],
+  ['M22',  1.5,  20.5],
+  ['M22',  2.0,  20.0],
+  ['M24',  2.0,  22.0],
+  ['M27',  2.0,  25.0],
+  ['M30',  2.0,  28.0],
+];
+
+// ユニファイ UNC [呼び, 山数(ピッチ), 下穴]
+const TAP_UNC = [
+  ['1/4',   '20 (1.270)', 5.1],
+  ['5/16',  '18 (1.411)', 6.6],
+  ['3/8',   '16 (1.587)', 8.0],
+  ['7/16',  '14 (1.814)', 9.4],
+  ['1/2',   '13 (1.954)', 10.8],
+  ['9/16',  '12 (2.117)', 10.8],
+  ['5/8',   '11 (2.309)', 13.6],
+  ['3/4',   '10 (2.540)', 16.5],
+  ['7/8',   '9 (2.822)',  19.5],
+  ['1',     '8 (3.175)',  22.2],
+  ['1 1/8', '7 (3.629)',  25.0],
+  ['1 1/4', '7 (3.629)',  28.2],
+  ['1 3/8', '6 (4.23)',   30.8],
+  ['1 1/2', '6 (4.23)',   34.0],
+  ['1 3/4', '5 (5.08)',   39.5],
+  ['2',     '4 (6.35)',   45.2],
+];
+
+// ユニファイ UNF [呼び, 山数(ピッチ), 下穴]
+const TAP_UNF = [
+  ['1/4',  '28 (0.907)', 5.4],
+  ['5/16', '24 (1.058)', 6.9],
+  ['3/8',  '24 (1.058)', 8.4],
+  ['7/16', '20 (1.270)', 9.8],
+  ['1/2',  '20 (1.270)', 11.4],
+  ['9/16', '18 (1.411)', 12.5],
+  ['5/8',  '18 (1.411)', 14.5],
+  ['3/4',  '16 (1.587)', 17.5],
+  ['7/8',  '14 (1.814)', 20.5],
+  ['1',    '12 (2.117)', 23.2],
+];
+
+// ウィットねじ [呼び, 山数(ピッチ), 下穴]
+const TAP_W = [
+  ['W 1/8',  '40 (0.635)', 2.6],
+  ['W 3/16', '24 (1.058)', 3.7],
+  ['W 1/4',  '20 (1.270)', 5.1],
+  ['W 5/16', '18 (1.411)', 6.6],
+  ['W 3/8',  '16 (1.587)', 8.0],
+  ['W 7/16', '14 (1.814)', 9.4],
+  ['W 1/2',  '12 (2.117)', 10.7],
+  ['W 9/16', '12 (2.117)', 12.2],
+  ['W 5/8',  '11 (2.309)', 13.6],
+  ['W 3/4',  '10 (2.540)', 16.5],
+  ['W 7/8',  '9 (2.822)',  19.5],
+  ['W 1',    '8 (3.175)',  22.3],
+];
+
+// 管用テーパねじ Rc(PT) [呼び, 山数(ピッチ), 下穴]
+const TAP_RC = [
+  ['Rc 1/16',   '28 (0.907)', 6.2],
+  ['Rc 1/8',    '28 (0.907)', 8.2],
+  ['Rc 1/4',    '19 (1.337)', 11.0],
+  ['Rc 3/8',    '19 (1.337)', 14.5],
+  ['Rc 1/2',    '14 (1.814)', 18.0],
+  ['Rc 3/4',    '14 (1.814)', 23.5],
+  ['Rc 1',      '11 (2.309)', 29.5],
+  ['Rc 1 1/4',  '11 (2.309)', 38.0],
+  ['Rc 1 1/2',  '11 (2.309)', 44.0],
+  ['Rc 2',      '11 (2.309)', 55.5],
+];
+
+// 管用平行ねじ Rp(PS) [呼び, 山数(ピッチ), 下穴]
+const TAP_RP = [
+  ['Rp 1/16',   '28 (0.907)', 6.5],
+  ['Rp 1/8',    '28 (0.907)', 8.5],
+  ['Rp 1/4',    '19 (1.337)', 11.4],
+  ['Rp 3/8',    '19 (1.337)', 15.0],
+  ['Rp 1/2',    '14 (1.814)', 18.5],
+  ['Rp 3/4',    '14 (1.814)', 24.0],
+  ['Rp 1',      '11 (2.309)', 30.2],
+  ['Rp 1 1/4',  '11 (2.309)', 38.8],
+  ['Rp 1 1/2',  '11 (2.309)', 44.8],
+  ['Rp 2',      '11 (2.309)', 56.5],
+];
+
+// 管用平行ねじ G(PF) [呼び, 山数(ピッチ), 下穴]
+const TAP_G = [
+  ['G 1/16',   '28 (0.907)', 6.7],
+  ['G 1/8',    '28 (0.907)', 8.7],
+  ['G 1/4',    '19 (1.337)', 11.7],
+  ['G 3/8',    '19 (1.337)', 15.2],
+  ['G 1/2',    '14 (1.814)', 19.0],
+  ['G 5/8',    '14 (1.814)', 21.0],
+  ['G 3/4',    '14 (1.814)', 24.5],
+  ['G 7/8',    '14 (1.814)', 28.2],
+  ['G 1',      '11 (2.309)', 30.5],
+  ['G 1 1/8',  '11 (2.309)', 35.2],
+  ['G 1 1/4',  '11 (2.309)', 39.2],
+  ['G 1 1/2',  '11 (2.309)', 45.0],
+  ['G 1 3/4',  '11 (2.309)', 51.0],
+  ['G 2',      '11 (2.309)', 57.0],
+];
+
+document.getElementById('tap-mc-tbody').innerHTML = rows(TAP_MC);
+document.getElementById('tap-mf-tbody').innerHTML = rows(TAP_MF);
+document.getElementById('tap-unc-tbody').innerHTML = rows(TAP_UNC);
+document.getElementById('tap-unf-tbody').innerHTML = rows(TAP_UNF);
+document.getElementById('tap-w-tbody').innerHTML = rows(TAP_W);
+document.getElementById('tap-rc-tbody').innerHTML = rows(TAP_RC);
+document.getElementById('tap-rp-tbody').innerHTML = rows(TAP_RP);
+document.getElementById('tap-g-tbody').innerHTML = rows(TAP_G);
+indexData('タップ下穴（M並目）','',TAP_MC,['呼び','ピッチ','下穴サイズ']);
+indexData('タップ下穴（M細目）','',TAP_MF,['呼び','ピッチ','下穴サイズ']);
+indexData('タップ下穴（UNC）','',TAP_UNC,['呼び','山数(ピッチ)','下穴サイズ']);
+indexData('タップ下穴（UNF）','',TAP_UNF,['呼び','山数(ピッチ)','下穴サイズ']);
+indexData('タップ下穴（W）','',TAP_W,['呼び','山数(ピッチ)','下穴サイズ']);
+indexData('タップ下穴（Rc/PT）','',TAP_RC,['呼び','山数(ピッチ)','下穴サイズ']);
+indexData('タップ下穴（Rp/PS）','',TAP_RP,['呼び','山数(ピッチ)','下穴サイズ']);
+indexData('タップ下穴（G/PF）','',TAP_G,['呼び','山数(ピッチ)','下穴サイズ']);
 </script>
 <script>
 // PWA installed
