@@ -262,6 +262,9 @@
   <div class="nav-item" onclick="showPage('gear')" id="nav-gear">
     <span class="icon">🔧</span><span>プーラ</span>
   </div>
+  <div class="nav-item" onclick="showPage('bolt')" id="nav-bolt">
+    <span class="icon">🔩</span><span>ボルト</span>
+  </div>
 </nav>
 
 <!-- Main -->
@@ -312,6 +315,11 @@
         <span class="sc-icon">🔧</span>
         <span class="sc-title">ギヤプーラ</span>
         <span class="sc-sub">仕様表・作業条件表</span>
+      </div>
+      <div class="section-card" onclick="showPage('bolt')">
+        <span class="sc-icon">🔩</span>
+        <span class="sc-title">工具口幅・ボルト径</span>
+        <span class="sc-sub">メートルねじ・ウィットねじ</span>
       </div>
     </div>
   </div>
@@ -1247,6 +1255,60 @@
 
 
 
+  <!-- ━━ ボルト ━━ -->
+  <div class="page" id="page-bolt">
+    <div class="page-title">🔩 工具の口幅とボルト径寸法表</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'bolt','metric')">メートルねじ</button>
+      <button class="tab-btn" onclick="switchTab(this,'bolt','whit')">ウィットねじ</button>
+    </div>
+
+    <!-- メートルねじ -->
+    <div class="tab-pane active" id="bolt-tab-metric">
+      <div class="content-card">
+        <div class="card-header">メートルねじ　工具の口幅（スパナ、めがね、ソケットなど）単位：mm</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">※数値はJISによる改正前で、（）はJISの数値です</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ボルト径<br>D</th>
+                  <th>六角ボルト・<br>ナット S</th>
+                  <th>小形・六角<br>ボルト・ナット S</th>
+                  <th>重力・六角<br>ボルト・ナット S</th>
+                  <th>六角穴付き<br>ボルト S</th>
+                  <th>六角穴付き<br>止めねじ S</th>
+                </tr>
+              </thead>
+              <tbody id="bolt-metric-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ウィットねじ -->
+    <div class="tab-pane" id="bolt-tab-whit">
+      <div class="content-card">
+        <div class="card-header">ウィットねじ　六角ボルト・ナット口幅　単位：mm</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ボルト径 D</th>
+                  <th>六角ボルト・ナット S</th>
+                </tr>
+              </thead>
+              <tbody id="bolt-whit-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /main -->
 
 <script>
@@ -1923,6 +1985,74 @@ function doSearch(q) {
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 工具の口幅とボルト径寸法表
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// メートルねじ [ボルト径, 六角, 小形六角, 重力六角, 六角穴付, 六角穴付止めねじ]
+const BOLT_METRIC = [
+  ['M2',    4,        '—',  '—',  '—',  '—'],
+  ['M2.2',  4.5,      '—',  '—',  '—',  '—'],
+  ['M2.5',  5,        '—',  '—',  '—',  '—'],
+  ['M3',    5.5,      '—',  '—',  2.5,  1.5],
+  ['M3.5',  6,        '—',  '—',  '—',  '—'],
+  ['M4',    7,        '—',  '—',  3,    2],
+  ['M4.5',  8,        '—',  '—',  '—',  '—'],
+  ['M5',    8,        '—',  '—',  4,    2.5],
+  ['M6',    10,       '—',  '—',  5,    3],
+  ['M7',    11,       '—',  '—',  '—',  '—'],
+  ['M8',    13,       12,   '—',  6,    4],
+  ['M10',   '16(17)', 14,   '—',  8,    5],
+  ['M12',   '18(19)', 17,   22,   10,   6],
+  ['M14',   '21(22)', 19,   '—',  12,   '—'],
+  ['M16',   24,       22,   27,   14,   8],
+  ['M18',   27,       24,   '—',  14,   '—'],
+  ['M20',   30,       27,   32,   17,   10],
+  ['M22',   32,       30,   36,   17,   '—'],
+  ['M24',   36,       32,   41,   19,   '—'],
+  ['M27',   41,       36,   46,   19,   '—'],
+  ['M30',   46,       41,   50,   22,   '—'],
+  ['M33',   50,       46,   '—',  24,   '—'],
+  ['M36',   55,       50,   '—',  27,   '—'],
+  ['M39',   60,       55,   '—',  27,   '—'],
+  ['M42',   65,       '—',  '—',  32,   '—'],
+  ['M45',   70,       '—',  '—',  32,   '—'],
+  ['M48',   75,       '—',  '—',  36,   '—'],
+  ['M52',   80,       '—',  '—',  36,   '—'],
+  ['M56',   85,       '—',  '—',  '—',  '—'],
+  ['M60',   90,       '—',  '—',  '—',  '—'],
+  ['M64',   95,       '—',  '—',  '—',  '—'],
+  ['M68',   100,      '—',  '—',  '—',  '—'],
+];
+
+// ウィットねじ [ボルト径, 六角ボルト・ナット]
+const BOLT_WHIT = [
+  ['W 3/8',   17],
+  ['W 7/16',  19],
+  ['W 1/2',   21],
+  ['W 5/8',   26],
+  ['W 3/4',   32],
+  ['W 7/8',   35],
+  ['W1',      41],
+  ['W1 1/8',  46],
+  ['W1 1/4',  50],
+  ['W1 3/8',  54],
+  ['W1 1/2',  58],
+  ['W1 5/8',  63],
+  ['W1 3/4',  67],
+  ['W1 7/8',  71],
+  ['W2',      77],
+  ['W2 1/4',  85],
+  ['W2 1/2',  95],
+  ['W2 3/4',  105],
+  ['W3',      110],
+  ['W3 1/4',  120],
+];
+
+document.getElementById('bolt-metric-tbody').innerHTML = rows(BOLT_METRIC);
+document.getElementById('bolt-whit-tbody').innerHTML = rows(BOLT_WHIT);
+indexData('工具口幅・ボルト径（メートル）','',BOLT_METRIC,['ボルト径','六角','小形六角','重力六角','六角穴付','六角穴付止めねじ']);
+indexData('工具口幅・ボルト径（ウィット）','',BOLT_WHIT,['ボルト径','六角ボルト・ナット']);
 </script>
 <script>
 // PWA installed
