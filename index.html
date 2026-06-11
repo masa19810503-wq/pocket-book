@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MINIポケットブック｜東亜工業 中条事業所</title>
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1a4b8c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ポケットブック">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<style>
+  :root {
+    --primary: #1a4b8c;
+    --primary-light: #2563b8;
+    --accent: #e85c1a;
+    --bg: #f4f6fa;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --border: #d1d5db;
+    --header-h: 56px;
+    --nav-h: 60px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    padding-bottom: var(--nav-h);
+  }
+
+  /* ── Header ── */
+  #app-header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: var(--header-h);
+    background: var(--primary);
+    display: flex; align-items: center; padding: 0 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+  #header-title {
+    color: #fff; font-size: 16px; font-weight: 700; flex: 1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #search-btn {
+    background: none; border: none; color: #fff; font-size: 22px; cursor: pointer;
+    padding: 6px; border-radius: 6px;
+  }
+
+  /* ── Search overlay ── */
+  #search-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 200; background: rgba(0,0,0,.5);
+    flex-direction: column; align-items: center; padding-top: 60px;
+  }
+  #search-overlay.open { display: flex; }
+  #search-box {
+    width: 92%; max-width: 500px; padding: 12px 16px;
+    font-size: 16px; border-radius: 10px; border: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,.3);
+  }
+  #search-results {
+    width: 92%; max-width: 500px; max-height: 60vh;
+    overflow-y: auto; background: #fff; border-radius: 10px;
+    margin-top: 8px; box-shadow: 0 4px 20px rgba(0,0,0,.2);
+  }
+  .search-item {
+    padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer;
+  }
+  .search-item:hover { background: var(--bg); }
+  .search-item .s-section { font-size: 11px; color: var(--muted); }
+  .search-item .s-label { font-size: 14px; font-weight: 600; }
+
+  /* ── Bottom nav ── */
+  #bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    height: var(--nav-h);
+    background: var(--primary);
+    display: flex; overflow-x: auto; scrollbar-width: none;
+  }
+  #bottom-nav::-webkit-scrollbar { display: none; }
+  .nav-item {
+    flex: 0 0 auto; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 0 14px; cursor: pointer; color: rgba(255,255,255,.65);
+    font-size: 10px; gap: 3px; white-space: nowrap;
+    border-bottom: 3px solid transparent; transition: all .2s;
+    min-width: 64px;
+  }
+  .nav-item .icon { font-size: 20px; }
+  .nav-item.active { color: #fff; border-bottom-color: var(--accent); }
+
+  /* ── Main content ── */
+  #main {
+    margin-top: var(--header-h);
+    padding: 12px;
+  }
+
+  /* ── Section pages ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── Home page ── */
+  .home-hero {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: #fff; border-radius: 14px; padding: 20px;
+    text-align: center; margin-bottom: 16px;
+  }
+  .home-hero h1 { font-size: 20px; font-weight: 800; }
+  .home-hero p { font-size: 12px; opacity: .8; margin-top: 4px; }
+
+  .section-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .section-card {
+    background: var(--card); border-radius: 12px;
+    padding: 16px 12px; cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px; text-align: center; transition: transform .15s;
+    border: 1px solid var(--border);
+  }
+  .section-card:active { transform: scale(.97); }
+  .section-card .sc-icon { font-size: 28px; }
+  .section-card .sc-title { font-size: 12px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .section-card .sc-sub { font-size: 10px; color: var(--muted); }
+
+  /* ── Content cards ── */
+  .content-card {
+    background: var(--card); border-radius: 12px; margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08); border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .card-header {
+    background: var(--primary); color: #fff;
+    padding: 10px 14px; font-size: 13px; font-weight: 700;
+  }
+  .card-body { padding: 14px; }
+
+  /* ── Tables ── */
+  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; min-width: 280px; }
+  th {
+    background: #e8eef7; color: var(--primary);
+    font-size: 11px; font-weight: 700; padding: 7px 8px;
+    text-align: center; border: 1px solid #c5d3e8;
+    white-space: nowrap;
+  }
+  td {
+    font-size: 12px; padding: 7px 8px;
+    text-align: center; border: 1px solid #e2e8f0;
+    white-space: nowrap;
+  }
+  tr:nth-child(even) td { background: #f8f9fc; }
+  tr:hover td { background: #eef3fb; }
+
+  /* ── Info items ── */
+  .info-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .info-item:last-child { border-bottom: none; }
+  .info-num {
+    min-width: 28px; height: 28px; border-radius: 50%;
+    background: var(--primary); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .info-text { font-size: 13px; line-height: 1.6; }
+  .info-label { font-weight: 700; color: var(--primary); font-size: 13px; }
+
+  /* ── Grid specs ── */
+  .spec-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .spec-item {
+    background: #f0f4ff; border-radius: 8px; padding: 10px 8px; text-align: center;
+  }
+  .spec-item .sp-range { font-size: 11px; color: var(--muted); }
+  .spec-item .sp-val { font-size: 16px; font-weight: 800; color: var(--primary); margin-top: 2px; }
+  .spec-item .sp-unit { font-size: 10px; color: var(--muted); }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 20px;
+    font-size: 10px; font-weight: 700;
+  }
+  .badge-blue { background: #dbeafe; color: #1d4ed8; }
+  .badge-green { background: #dcfce7; color: #15803d; }
+  .badge-orange { background: #ffedd5; color: #c2410c; }
+
+  /* ── Section title ── */
+  .page-title {
+    font-size: 18px; font-weight: 800; color: var(--primary);
+    margin-bottom: 12px; padding-bottom: 8px;
+    border-bottom: 3px solid var(--primary);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ── Tab switcher ── */
+  .tab-bar {
+    display: flex; overflow-x: auto; gap: 0; margin-bottom: 12px;
+    border-radius: 10px; background: #e8eef7; padding: 3px;
+    scrollbar-width: none;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex: 0 0 auto; padding: 7px 14px; border: none; background: transparent;
+    border-radius: 8px; font-size: 12px; cursor: pointer; white-space: nowrap;
+    color: var(--muted); font-weight: 600; transition: all .2s;
+  }
+  .tab-btn.active { background: var(--card); color: var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div id="app-header">
+  <div id="header-title">📖 MINIポケットブック</div>
+  <button id="search-btn" onclick="openSearch()">🔍</button>
+</div>
+
+<!-- Search Overlay -->
+<div id="search-overlay" onclick="closeSearchOnBg(event)">
+  <input id="search-box" type="text" placeholder="キーワードで検索（例：1/2、フランジ、M16）"
+    oninput="doSearch(this.value)" autofocus>
+  <div id="search-results"></div>
+</div>
+
+<!-- Bottom Nav -->
+<nav id="bottom-nav">
+  <div class="nav-item active" onclick="showPage('home')" id="nav-home">
+    <span class="icon">🏠</span><span>ホーム</span>
+  </div>
+  <div class="nav-item" onclick="showPage('pipe')" id="nav-pipe">
+    <span class="icon">🔩</span><span>鋼管</span>
+  </div>
+  <div class="nav-item" onclick="showPage('flange')" id="nav-flange">
+    <span class="icon">⭕</span><span>フランジ</span>
+  </div>
+  <div class="nav-item" onclick="showPage('fitting')" id="nav-fitting">
+    <span class="icon">🔧</span><span>継手</span>
+  </div>
+  <div class="nav-item" onclick="showPage('ubolt')" id="nav-ubolt">
+    <span class="icon">🔗</span><span>Uボルト</span>
+  </div>
+  <div class="nav-item" onclick="showPage('gasket')" id="nav-gasket">
+    <span class="icon">⬡</span><span>ガスケット</span>
+  </div>
+  <div class="nav-item" onclick="showPage('rigging')" id="nav-rigging">
+    <span class="icon">⛓</span><span>玉掛</span>
+  </div>
+  <div class="nav-item" onclick="showPage('machine')" id="nav-machine">
+    <span class="icon">⚙️</span><span>回転機</span>
+  </div>
+  <div class="nav-item" onclick="showPage('gear')" id="nav-gear">
+    <span class="icon">🔧</span><span>プーラ</span>
+  </div>
+  <div class="nav-item" onclick="showPage('bolt')" id="nav-bolt">
+    <span class="icon">🔩</span><span>ボルト</span>
+  </div>
+</nav>
+
+<!-- Main -->
+<div id="main">
+
+  <!-- ━━ HOME ━━ -->
+  <div class="page active" id="page-home">
+    <div class="home-hero" style="padding:28px 20px 24px;">
+      <h1 style="font-size:22px;letter-spacing:3px;font-weight:800;">ＭＩＮＩポケットブック</h1>
+    </div>
+    <div class="section-grid">
+      <div class="section-card" onclick="showPage('pipe')">
+        <span class="sc-icon">🔩</span>
+        <span class="sc-title">鋼管</span>
+        <span class="sc-sub">SUS・炭素鋼　外径・肉厚</span>
+      </div>
+      <div class="section-card" onclick="showPage('flange')">
+        <span class="sc-icon">⭕</span>
+        <span class="sc-title">フランジ</span>
+        <span class="sc-sub">JIS / ANSI</span>
+      </div>
+      <div class="section-card" onclick="showPage('fitting')">
+        <span class="sc-icon">🔧</span>
+        <span class="sc-title">フィッティング</span>
+        <span class="sc-sub">エルボ・チー・レジューサー</span>
+      </div>
+      <div class="section-card" onclick="showPage('ubolt')">
+        <span class="sc-icon">🔗</span>
+        <span class="sc-title">Uボルト</span>
+        <span class="sc-sub">穴ピッチ</span>
+      </div>
+      <div class="section-card" onclick="showPage('gasket')">
+        <span class="sc-icon">⬡</span>
+        <span class="sc-title">ガスケット</span>
+        <span class="sc-sub">平形・うず巻形</span>
+      </div>
+      <div class="section-card" onclick="showPage('rigging')">
+        <span class="sc-icon">⛓</span>
+        <span class="sc-title">玉掛・揚重</span>
+        <span class="sc-sub">アイボルト・シャックル</span>
+      </div>
+      <div class="section-card" onclick="showPage('machine')">
+        <span class="sc-icon">⚙️</span>
+        <span class="sc-title">汎用回転機</span>
+        <span class="sc-sub">嵌め合い・チェーン</span>
+      </div>
+      <div class="section-card" onclick="showPage('gear')">
+        <span class="sc-icon">🔧</span>
+        <span class="sc-title">ギヤプーラ</span>
+        <span class="sc-sub">仕様表・作業条件表</span>
+      </div>
+      <div class="section-card" onclick="showPage('bolt')">
+        <span class="sc-icon">🔩</span>
+        <span class="sc-title">ボルト・ナット</span>
+        <span class="sc-sub">対辺寸法・化学成分</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ━━ 鋼管 ━━ -->
+  <div class="page" id="page-pipe">
+    <div class="page-title">🔩 鋼管寸法表</div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'pipe','sus')">ステンレス鋼管</button>
+      <button class="tab-btn" onclick="switchTab(this,'pipe','cs')">炭素鋼管</button>
+    </div>
+
+    <!-- SUS -->
+    <div class="tab-pane active" id="pipe-tab-sus">
+      <div class="content-card">
+        <div class="card-header">ステンレス鋼管（単位：mm）</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table id="sus-table">
+              <thead>
+                <tr>
+                  <th>B(inch)</th>
+                  <th>A<br>呼び径</th>
+                  <th>外径<br>OD</th>
+                  <th>S/10</th>
+                  <th>S/20</th>
+                  <th>S/40</th>
+                  <th>S/80</th>
+                </tr>
+              </thead>
+              <tbody id="sus-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CS -->
+    <div class="tab-pane" id="pipe-tab-cs">
+      <div class="content-card">
+        <div class="card-header">炭素鋼管（単位：mm）</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>B(inch)</th>
+                  <th>A<br>呼び径</th>
+                  <th>外径<br>OD</th>
+                  <th>SGP</th>
+                  <th>S/20</th>
+                  <th>S/40</th>
+                  <th>S/80</th>
+                </tr>
+              </thead>
+              <tbody id="cs-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ━━ フランジ ━━ -->
+  <div class="page" id="page-flange">
+    <div class="page-title">⭕ フランジ寸法表</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'flange','5k')">JIS 5k</button>
+      <button class="tab-btn" onclick="switchTab(this,'flange','10k')">JIS 10k</button>
+      <button class="tab-btn" onclick="switchTab(this,'flange','20k')">JIS 20k</button>
+      <button class="tab-btn" onclick="switchTab(this,'flange','30k')">JIS 30k</button>
+      <button class="tab-btn" onclick="switchTab(this,'flange','63k')">JIS 63k</button>
+      <button class="tab-btn" onclick="switchTab(this,'flange','a150')">ANSI 150lb</button>
+      <button class="tab-btn" onclick="switchTab(this,'flange','a300')">ANSI 300lb</button>
+      <button class="tab-btn" onclick="switchTab(this,'flange','a600')">ANSI 600lb</button>
+      <button class="tab-btn" onclick="switchTab(this,'flange','a900')">ANSI 900lb</button>
+      <button class="tab-btn" onclick="switchTab(this,'flange','a1500')">ANSI 1500lb</button>
+    </div>
+    <!-- 5k -->
+    <div class="tab-pane active" id="flange-tab-5k">
+      <div class="content-card">
+        <div class="card-header">フランジ 5k（単位：mm）</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">★5K・10K標準はFF（全面座）。RF(凸面)・MF(はめ込)も参考掲載。G=4.5mm　5mm切上</p>
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">A<br>呼び径</th><th rowspan="2">外径</th>
+                <th rowspan="2">N</th><th rowspan="2">ボルト</th>
+                <th colspan="3">SBN（スタッドボルト）長さmm</th>
+                <th colspan="3">MBN（六角ボルト）長さmm</th>
+              </tr>
+              <tr><th>FF<br>★標準</th><th>RF<br>(凸面)</th><th>MF<br>(はめ込)</th><th>FF<br>★標準</th><th>RF<br>(凸面)</th><th>MF<br>(はめ込)</th></tr>
+            </thead><tbody id="f5k-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 10k -->
+    <div class="tab-pane" id="flange-tab-10k">
+      <div class="content-card">
+        <div class="card-header">フランジ 10k（単位：mm）</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">★5K・10K標準はFF（全面座）。RF(凸面)・MF(はめ込)も参考掲載。G=4.5mm　5mm切上</p>
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">A<br>呼び径</th><th rowspan="2">外径</th>
+                <th rowspan="2">N</th><th rowspan="2">ボルト</th>
+                <th colspan="3">SBN（スタッドボルト）長さmm</th>
+                <th colspan="3">MBN（六角ボルト）長さmm</th>
+              </tr>
+              <tr><th>FF<br>★標準</th><th>RF<br>(凸面)</th><th>MF<br>(はめ込)</th><th>FF<br>★標準</th><th>RF<br>(凸面)</th><th>MF<br>(はめ込)</th></tr>
+            </thead><tbody id="f10k-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 20k -->
+    <div class="tab-pane" id="flange-tab-20k">
+      <div class="content-card">
+        <div class="card-header">フランジ 20k（単位：mm）</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">A<br>呼び径</th><th rowspan="2">外径</th>
+                <th rowspan="2">N</th><th rowspan="2">ボルト</th>
+                <th colspan="3">SBN（スタッドボルト）長さmm</th>
+                <th colspan="3">MBN（六角ボルト）長さmm</th>
+              </tr>
+              <tr><th>RF</th><th>MF</th><th>TG</th><th>RF</th><th>MF</th><th>TG</th></tr>
+            </thead><tbody id="f20k-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 30k -->
+    <div class="tab-pane" id="flange-tab-30k">
+      <div class="content-card">
+        <div class="card-header">JIS フランジ 30k　JIS B2220（単位：mm）</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">G=4.5mm（うず巻形V）　SBN=両端ナット　MBN=六角ボルト　長さ=2T+G+n×RF+…　5mm切上</p>
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">A<br>呼び径</th><th rowspan="2">外径</th>
+                <th rowspan="2">N</th><th rowspan="2">ボルト</th>
+                <th colspan="3">SBN（スタッドボルト）長さmm</th>
+                <th colspan="3">MBN（六角ボルト）長さmm</th>
+              </tr>
+              <tr><th>RF</th><th>MF</th><th>TG</th><th>RF</th><th>MF</th><th>TG</th></tr>
+            </thead><tbody id="f30k-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 63k -->
+    <div class="tab-pane" id="flange-tab-63k">
+      <div class="content-card">
+        <div class="card-header">JIS フランジ 63k　JIS B2220（単位：mm）</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">G=4.5mm（うず巻形V）　SBN=両端ナット　MBN=六角ボルト　長さ=2T+G+n×RF+…　5mm切上</p>
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">A<br>呼び径</th><th rowspan="2">外径</th>
+                <th rowspan="2">N</th><th rowspan="2">ボルト</th>
+                <th colspan="3">SBN（スタッドボルト）長さmm</th>
+                <th colspan="3">MBN（六角ボルト）長さmm</th>
+              </tr>
+              <tr><th>RF</th><th>MF</th><th>TG</th><th>RF</th><th>MF</th><th>TG</th></tr>
+            </thead><tbody id="f63k-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ANSI 150 -->
+    <div class="tab-pane" id="flange-tab-a150">
+      <div class="content-card">
+        <div class="card-header">ANSI Class 150lb　ASME B16.5（単位：mm）</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">G=4.5mm　SBN=両端ナット　MBN=六角ボルト　RF=2mm(凸面)　5mm切上</p>
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">NPS<br>(inch)</th><th rowspan="2">A</th>
+                <th rowspan="2">外径</th><th rowspan="2">N</th>
+                <th rowspan="2">ボルト</th>
+                <th colspan="3">SBN（スタッドボルト）長さmm</th>
+                <th colspan="3">MBN（六角ボルト）長さmm</th>
+              </tr>
+              <tr><th>RF</th><th>MF</th><th>TG</th><th>RF</th><th>MF</th><th>TG</th></tr>
+            </thead><tbody id="fa150-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ANSI 300 -->
+    <div class="tab-pane" id="flange-tab-a300">
+      <div class="content-card">
+        <div class="card-header">ANSI Class 300lb　ASME B16.5（単位：mm）</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">G=4.5mm　SBN=両端ナット　MBN=六角ボルト　RF=2mm(凸面)　5mm切上</p>
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">NPS<br>(inch)</th><th rowspan="2">A</th>
+                <th rowspan="2">外径</th><th rowspan="2">N</th>
+                <th rowspan="2">ボルト</th>
+                <th colspan="3">SBN（スタッドボルト）長さmm</th>
+                <th colspan="3">MBN（六角ボルト）長さmm</th>
+              </tr>
+              <tr><th>RF</th><th>MF</th><th>TG</th><th>RF</th><th>MF</th><th>TG</th></tr>
+            </thead><tbody id="fa300-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ANSI 600 -->
+    <div class="tab-pane" id="flange-tab-a600">
+      <div class="content-card">
+        <div class="card-header">ANSI Class 600lb　ASME B16.5（単位：mm）</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">G=4.5mm　SBN=両端ナット　MBN=六角ボルト　RF=7mm(凸面)　5mm切上</p>
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">NPS<br>(inch)</th><th rowspan="2">A</th>
+                <th rowspan="2">外径</th><th rowspan="2">N</th>
+                <th rowspan="2">ボルト</th>
+                <th colspan="3">SBN（スタッドボルト）長さmm</th>
+                <th colspan="3">MBN（六角ボルト）長さmm</th>
+              </tr>
+              <tr><th>RF</th><th>MF</th><th>TG</th><th>RF</th><th>MF</th><th>TG</th></tr>
+            </thead><tbody id="fa600-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ANSI 900 -->
+    <div class="tab-pane" id="flange-tab-a900">
+      <div class="content-card">
+        <div class="card-header">ANSI Class 900lb　ASME B16.5（単位：mm）</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">G=4.5mm　SBN=両端ナット　MBN=六角ボルト　RF=7mm(凸面)　5mm切上</p>
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">NPS<br>(inch)</th><th rowspan="2">A</th>
+                <th rowspan="2">外径</th><th rowspan="2">N</th>
+                <th rowspan="2">ボルト</th>
+                <th colspan="3">SBN（スタッドボルト）長さmm</th>
+                <th colspan="3">MBN（六角ボルト）長さmm</th>
+              </tr>
+              <tr><th>RF</th><th>MF</th><th>TG</th><th>RF</th><th>MF</th><th>TG</th></tr>
+            </thead><tbody id="fa900-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ANSI 1500 -->
+    <div class="tab-pane" id="flange-tab-a1500">
+      <div class="content-card">
+        <div class="card-header">ANSI Class 1500lb　ASME B16.5（単位：mm）</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">G=4.5mm　SBN=両端ナット　MBN=六角ボルト　RF=7mm(凸面)　5mm切上</p>
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">NPS<br>(inch)</th><th rowspan="2">A</th>
+                <th rowspan="2">外径</th><th rowspan="2">N</th>
+                <th rowspan="2">ボルト</th>
+                <th colspan="3">SBN（スタッドボルト）長さmm</th>
+                <th colspan="3">MBN（六角ボルト）長さmm</th>
+              </tr>
+              <tr><th>RF</th><th>MF</th><th>TG</th><th>RF</th><th>MF</th><th>TG</th></tr>
+            </thead><tbody id="fa1500-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ━━ 継手 ━━ -->
+  <!-- ━━ フィッティング ━━ -->
+  <div class="page" id="page-fitting">
+    <div class="page-title">🔧 フィッティング（芯：芯）</div>
+    <div class="tab-pane active" id="fitting-tab-elbow">
+      <div class="content-card">
+        <div class="card-header">フィッテング（芯：芯）　単位：mm　※レジューサーは長さ</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">B(inch)</th>
+                <th rowspan="2">A<br>呼び径</th>
+                <th colspan="2">エルボ</th>
+                <th rowspan="2">チー</th>
+                <th rowspan="2">レジューサー</th>
+              </tr>
+              <tr><th>45°</th><th>90°</th></tr>
+            </thead><tbody id="fitting-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /page-fitting -->
+
+  <!-- ━━ Uボルト ━━ -->
+  <div class="page" id="page-ubolt">
+    <div class="page-title">🔗 Uボルト</div>
+    <div class="content-card">
+      <div class="card-header">Uボルト　穴ピッチ（単位：mm）</div>
+      <div class="card-body">
+        <div class="tbl-wrap">
+          <table><thead><tr>
+            <th>B(inch)</th><th>A<br>呼び径</th><th>穴ピッチ</th>
+          </tr></thead><tbody id="ubolt-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ━━ ガスケット ━━ -->
+  <div class="page" id="page-gasket">
+    <div class="page-title">⬡ ガスケット</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'gasket','flat')">T/＃1120<br>V/＃7030</button>
+      <button class="tab-btn" onclick="switchTab(this,'gasket','v8596')">V/＃8596<br>内外輪付</button>
+      <button class="tab-btn" onclick="switchTab(this,'gasket','v8591')">V/＃8591<br>外輪付</button>
+      <button class="tab-btn" onclick="switchTab(this,'gasket','v8592')">V/＃8592<br>内輪付</button>
+      <button class="tab-btn" onclick="switchTab(this,'gasket','v8590')">V/＃8590<br>基本形</button>
+    </div>
+
+    <!-- T/#1120・V/#7030 平形ガスケット -->
+    <div class="tab-pane active" id="gasket-tab-flat">
+      <div class="content-card">
+        <div class="card-header">T/＃1120・V/＃7030　JIS管フランジ用平形ガスケット（単位：mm）</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">B(inch)</th>
+                <th rowspan="2">A<br>呼び径</th>
+                <th colspan="2">５ｋ</th>
+                <th colspan="2">１０ｋ</th>
+              </tr>
+              <tr><th>外径</th><th>内径</th><th>外径</th><th>内径</th></tr>
+            </thead><tbody id="gasket-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- V/#8596 内外輪付 -->
+    <div class="tab-pane" id="gasket-tab-v8596">
+      <div class="tab-pane active" id="fitting-tab-v8596">
+      <div class="content-card">
+        <div class="card-header">バルカー No.8596 クリーンタイト（内外輪付）　平面座用</div>
+        <div class="card-body">
+          <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">出典：バルカーカタログ GC12 表3　JIS B2404-2006　単位：mm</p>
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(this,'v8596','10k')">JIS 10K</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8596','20k')">JIS 20K</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8596','30k')">JIS 30K</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8596','63k')">JIS 63K</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8596','a150')">ANSI 150</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8596','a300')">ANSI 300</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8596','a600')">ANSI 600</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8596','a900')">ANSI 900</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8596','a1500')">ANSI 1500</button>
+          </div>
+          <div class="tab-pane active" id="v8596-tab-10k">
+            <div class="tbl-wrap">
+              <table><thead><tr>
+                <th>A<br>呼び径</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+              </tr></thead><tbody id="v8596-10k-tbody"></tbody></table>
+            </div>
+          </div>
+          <div class="tab-pane" id="v8596-tab-20k">
+            <div class="tbl-wrap">
+              <table><thead><tr>
+                <th>A<br>呼び径</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+              </tr></thead><tbody id="v8596-20k-tbody"></tbody></table>
+            </div>
+          </div>
+          <div class="tab-pane" id="v8596-tab-30k">
+            <div class="tbl-wrap">
+              <table><thead><tr>
+                <th>A<br>呼び径</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+              </tr></thead><tbody id="v8596-30k-tbody"></tbody></table>
+            </div>
+          </div>
+          <div class="tab-pane" id="v8596-tab-63k">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">バルカーGC12 表3　JIS B2220 63K　平面座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>A<br>呼び径</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+            </tr></thead><tbody id="v8596-63k-tbody"></tbody></table></div>
+          </div>
+          <div class="tab-pane" id="v8596-tab-a150">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">ASME B16.20 / JPI-7S-41-2005 表7　平面座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>NPS</th><th>A</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th><th>D1<br>内輪内径</th>
+            </tr></thead><tbody id="v8596-a150-tbody"></tbody></table></div>
+          </div>
+          <div class="tab-pane" id="v8596-tab-a300">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">ASME B16.20 / JPI-7S-41-2005 表7　平面座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>NPS</th><th>A</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th><th>D1<br>内輪内径</th>
+            </tr></thead><tbody id="v8596-a300-tbody"></tbody></table></div>
+          </div>
+          <div class="tab-pane" id="v8596-tab-a600">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">ASME B16.20 / JPI-7S-41-2005 表7　平面座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>NPS</th><th>A</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th><th>D1<br>内輪内径</th>
+            </tr></thead><tbody id="v8596-a600-tbody"></tbody></table></div>
+          </div>
+          <div class="tab-pane" id="v8596-tab-a900">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">ASME B16.20 / JPI-7S-41-2005 表7　平面座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>NPS</th><th>A</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th><th>D1<br>内輪内径</th>
+            </tr></thead><tbody id="v8596-a900-tbody"></tbody></table></div>
+          </div>
+          <div class="tab-pane" id="v8596-tab-a1500">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">ASME B16.20 / JPI-7S-41-2005 表7　平面座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>NPS</th><th>A</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th><th>D1<br>内輪内径</th>
+            </tr></thead><tbody id="v8596-a1500-tbody"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /gasket-tab-v8596 -->
+
+    <!-- V/#8591 外輪付 -->
+    <div class="tab-pane" id="gasket-tab-v8591">
+      <div class="tab-pane active" id="fitting-tab-v8591">
+      <div class="content-card">
+        <div class="card-header">バルカー No.8591 クリーンタイト（外輪付）　平面座用</div>
+        <div class="card-body">
+          <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">出典：バルカーカタログ GC12 表1　JIS B2404-2006　単位：mm</p>
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(this,'v8591','10k')">JIS 10K</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8591','20k')">JIS 20K</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8591','30k')">JIS 30K</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8591','63k')">JIS 63K</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8591','a150')">ANSI 150</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8591','a300')">ANSI 300</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8591','a600')">ANSI 600</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8591','a900')">ANSI 900</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8591','a1500')">ANSI 1500</button>
+          </div>
+          <div class="tab-pane active" id="v8591-tab-10k">
+            <div class="tbl-wrap">
+              <table><thead><tr>
+                <th>A<br>呼び径</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+              </tr></thead><tbody id="v8591-10k-tbody"></tbody></table>
+            </div>
+          </div>
+          <div class="tab-pane" id="v8591-tab-20k">
+            <div class="tbl-wrap">
+              <table><thead><tr>
+                <th>A<br>呼び径</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+              </tr></thead><tbody id="v8591-20k-tbody"></tbody></table>
+            </div>
+          </div>
+          <div class="tab-pane" id="v8591-tab-30k">
+            <div class="tbl-wrap">
+              <table><thead><tr>
+                <th>A<br>呼び径</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+              </tr></thead><tbody id="v8591-30k-tbody"></tbody></table>
+            </div>
+          </div>
+          <div class="tab-pane" id="v8591-tab-63k">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">バルカーGC12 表1　JIS B2220 63K　平面座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>A<br>呼び径</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+            </tr></thead><tbody id="v8591-63k-tbody"></tbody></table></div>
+          </div>
+          <div class="tab-pane" id="v8591-tab-a150">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">ASME B16.20 / JPI-7S-41-2005 表7　平面座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>NPS</th><th>A</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+            </tr></thead><tbody id="v8591-a150-tbody"></tbody></table></div>
+          </div>
+          <div class="tab-pane" id="v8591-tab-a300">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">ASME B16.20 / JPI-7S-41-2005 表7　平面座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>NPS</th><th>A</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+            </tr></thead><tbody id="v8591-a300-tbody"></tbody></table></div>
+          </div>
+          <div class="tab-pane" id="v8591-tab-a600">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">ASME B16.20 / JPI-7S-41-2005 表7　平面座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>NPS</th><th>A</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+            </tr></thead><tbody id="v8591-a600-tbody"></tbody></table></div>
+          </div>
+          <div class="tab-pane" id="v8591-tab-a900">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">ASME B16.20 / JPI-7S-41-2005 表7　平面座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>NPS</th><th>A</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+            </tr></thead><tbody id="v8591-a900-tbody"></tbody></table></div>
+          </div>
+          <div class="tab-pane" id="v8591-tab-a1500">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">ASME B16.20 / JPI-7S-41-2005 表7　平面座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>NPS</th><th>A</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th><th>D4<br>外輪外径</th>
+            </tr></thead><tbody id="v8591-a1500-tbody"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /gasket-tab-v8591 -->
+
+    <!-- V/#8592 内輪付 -->
+    <div class="tab-pane" id="gasket-tab-v8592">
+      <div class="tab-pane active" id="fitting-tab-v8592">
+      <div class="content-card">
+        <div class="card-header">バルカー No.8592 クリーンタイト（内輪付）　はめ込み形用</div>
+        <div class="card-body">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(this,'v8592','jis')">JIS 10K〜30K</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8592','63k')">JIS 63K</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8592','ansi')">ANSI（MF座）</button>
+          </div>
+          <div class="tab-pane active" id="v8592-tab-jis">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">出典：バルカーカタログ GC12 表5　JIS B2404-2006　適用 10K〜30K　単位：mm</p>
+            <div class="tbl-wrap">
+              <table><thead><tr>
+                <th>A<br>呼び径</th><th>D1<br>内輪内径</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th>
+              </tr></thead><tbody id="v8592-tbody"></tbody></table>
+            </div>
+          </div>
+          <div class="tab-pane" id="v8592-tab-63k">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">バルカーGC12 表5　JIS B2220 40K・63K（参考）　はめ込み形用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>A<br>呼び径</th><th>D1<br>内輪内径</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th>
+            </tr></thead><tbody id="v8592-63k-tbody"></tbody></table></div>
+          </div>
+          <div class="tab-pane" id="v8592-tab-ansi">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">ASME B16.20 / JPI-7S-41-2005 表11　ラージメール・フィメール座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>NPS</th><th>A</th><th>D1<br>内輪内径</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th>
+            </tr></thead><tbody id="v8592-ansi-tbody"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /gasket-tab-v8592 -->
+
+    <!-- V/#8590 基本形 -->
+    <div class="tab-pane" id="gasket-tab-v8590">
+      <div class="tab-pane active" id="fitting-tab-v8590">
+      <div class="content-card">
+        <div class="card-header">バルカー No.8590 クリーンタイト（基本形）　溝形・はめ込み形用</div>
+        <div class="card-body">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(this,'v8590','jis')">JIS 10K〜30K</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8590','63k')">JIS 63K</button>
+            <button class="tab-btn" onclick="switchTab(this,'v8590','ansi')">ANSI（TG座）</button>
+          </div>
+          <div class="tab-pane active" id="v8590-tab-jis">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">出典：バルカーカタログ GC12 表6　JIS B2404-2006　単位：mm</p>
+            <div class="tbl-wrap">
+              <table><thead>
+                <tr>
+                  <th rowspan="2">A<br>呼び径</th>
+                  <th colspan="2">溝形用</th>
+                  <th colspan="2">はめ込み形用<br>(10K〜30K)</th>
+                </tr>
+                <tr><th>D2<br>内径</th><th>D3<br>外径</th><th>D2<br>内径</th><th>D3<br>外径</th></tr>
+              </thead><tbody id="v8590-tbody"></tbody></table>
+            </div>
+          </div>
+          <div class="tab-pane" id="v8590-tab-63k">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">バルカーGC12 表6　JIS B2220 40K・63K（参考）　溝形・はめ込み形用　単位：mm</p>
+            <div class="tbl-wrap">
+              <table><thead>
+                <tr>
+                  <th rowspan="2">A<br>呼び径</th>
+                  <th colspan="2">溝形用</th>
+                  <th colspan="2">はめ込み形用</th>
+                </tr>
+                <tr><th>D2<br>内径</th><th>D3<br>外径</th><th>D2<br>内径</th><th>D3<br>外径</th></tr>
+              </thead><tbody id="v8590-63k-tbody"></tbody></table>
+            </div>
+          </div>
+          <div class="tab-pane" id="v8590-tab-ansi">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:6px;">ASME B16.20 / JPI-7S-41-2005 表11　ラージタング・グループ座用　単位：mm</p>
+            <div class="tbl-wrap"><table><thead><tr>
+              <th>NPS</th><th>A</th><th>D2<br>本体内径</th><th>D3<br>本体外径</th>
+            </tr></thead><tbody id="v8590-ansi-tbody"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /gasket-tab-v8590 -->
+  </div><!-- /page-gasket -->
+
+  <!-- ━━ 玉掛・揚重 ━━ -->
+  <div class="page" id="page-rigging">
+    <div class="page-title">⛓ 玉掛・揚重</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'rigging','eyebolt')">アイボルト<br>アイナット</button>
+      <button class="tab-btn" onclick="switchTab(this,'rigging','shackle')">シャックル</button>
+      <button class="tab-btn" onclick="switchTab(this,'rigging','wire')">ワイヤー</button>
+    </div>
+    <!-- アイボルト -->
+    <div class="tab-pane active" id="rigging-tab-eyebolt">
+      <div class="content-card">
+        <div class="card-header">アイボルト・アイナット 使用荷重　kN（kgf）</div>
+        <div class="card-body">
+          <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">材質：鉄(SS400)・SUS304　表面処理：鉄(生地/ユニクロ/ドブメッキ)</p>
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">ねじの<br>呼び</th>
+                <th colspan="2">アイボルト</th>
+                <th colspan="2">アイナット</th>
+              </tr>
+              <tr><th>垂直吊り</th><th>45°吊り<br>(2個)</th><th>垂直吊り</th><th>45°吊り<br>(2個)</th></tr>
+            </thead><tbody id="eyebolt-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- シャックル -->
+    <div class="tab-pane" id="rigging-tab-shackle">
+      <div class="content-card">
+        <div class="card-header">シャックル 使用荷重（単位：mm / kg）</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th>呼び<br>t・d</th>
+                <th>使用荷重<br>tf</th>
+                <th>使用荷重<br>kN</th>
+                <th>口幅<br>B</th>
+                <th>頭径<br>D</th>
+                <th>長さ<br>L1</th>
+                <th>穴径<br>d1</th>
+                <th>ピン径</th>
+                <th>ねじ径</th>
+                <th>重量<br>kg</th>
+              </tr>
+            </thead><tbody id="shackle-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ワイヤー -->
+    <div class="tab-pane" id="rigging-tab-wire">
+      <div class="content-card">
+        <div class="card-header">ワイヤー安全荷重表</div>
+        <div class="card-body">
+          <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">6×24%　A種 JIS G3525規格品　安全率6</p>
+          <div class="tbl-wrap">
+            <table><thead>
+              <tr>
+                <th rowspan="2">直径</th>
+                <th rowspan="2">呼び</th>
+                <th rowspan="2">切断<br>荷重(t)</th>
+                <th rowspan="2">1本吊り<br>(t)</th>
+                <th colspan="2">2本吊り(t)</th>
+              </tr>
+              <tr><th>30°</th><th>60°</th></tr>
+            </thead><tbody id="wire-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ━━ 回転機 ━━ -->
+  <div class="page" id="page-machine">
+    <div class="page-title">⚙️ 汎用回転機　寸法検査基準</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'machine','clearance')">嵌め合い基準</button>
+      <button class="tab-btn" onclick="switchTab(this,'machine','pump')">ポンプマウス</button>
+      <button class="tab-btn" onclick="switchTab(this,'machine','chain')">ローラーチェーン</button>
+    </div>
+    <!-- 嵌め合い -->
+    <div class="tab-pane active" id="machine-tab-clearance">
+      <div class="content-card">
+        <div class="card-header">嵌め合い基準　最大許容隙間（単位：mm）</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table id="clearance-table">
+              <thead>
+                <tr>
+                  <th>部　品</th>
+                  <th>Φ18<br>～30</th>
+                  <th>Φ30<br>～50</th>
+                  <th>Φ50<br>～80</th>
+                  <th>Φ80<br>～120</th>
+                  <th>Φ120<br>～180</th>
+                  <th>Φ180<br>～250</th>
+                </tr>
+              </thead>
+              <tbody id="clearance-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ポンプマウス -->
+    <div class="tab-pane" id="machine-tab-pump">
+      <div class="content-card">
+        <div class="card-header">ポンプマウス部　最大隙間（直径で㎜）</div>
+        <div class="card-body">
+          <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">ライナーリングの外形による</p>
+          <div class="tbl-wrap">
+            <table><thead><tr>
+              <th>ライナーリング外形(mm)</th><th>最大隙間（直径で㎜）</th>
+            </tr></thead><tbody id="pump-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- チェーン -->
+    <div class="tab-pane" id="machine-tab-chain">
+      <div class="content-card">
+        <div class="card-header">ローラーチェーン摩耗量（６リンクピッチ）</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table><thead><tr>
+              <th>型式</th><th>基準値</th><th>許容値<br>（1.5%）</th><th>許容値<br>（1.2%）</th>
+            </tr></thead><tbody id="chain-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ━━ ギヤプーラ ━━ -->
+  <div class="page" id="page-gear">
+    <div class="page-title">🔧 ギヤプーラ</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'gear','spec')">仕様表</button>
+      <button class="tab-btn" onclick="switchTab(this,'gear','work')">作業条件表</button>
+    </div>
+
+    <!-- 仕様表 -->
+    <div class="tab-pane active" id="gear-tab-spec">
+      <div class="content-card">
+        <div class="card-header">仕様表（単位：mm）</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th rowspan="3">品番<br>2本爪</th>
+                  <th rowspan="3">品番<br>3本爪</th>
+                  <th colspan="2">D 引抜物の直径</th>
+                  <th colspan="3">t 引抜物の幅<br>（D最大時）</th>
+                  <th colspan="4">H 爪の届く長さ（最大）</th>
+                  <th colspan="2">破断荷重<br>kN</th>
+                </tr>
+                <tr>
+                  <th>2本爪</th>
+                  <th>3本爪</th>
+                  <th>G<br>G-S</th>
+                  <th>GL<br>GLL</th>
+                  <th>GT<br>GT-S</th>
+                  <th>G<br>G-S</th>
+                  <th>GL</th>
+                  <th>GLL</th>
+                  <th>GT<br>GT-S</th>
+                  <th>2本爪</th>
+                  <th>3本爪</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>G3</td><td>—</td>
+                  <td>40〜75</td><td>—</td>
+                  <td>30</td><td>—</td><td>—</td>
+                  <td>55</td><td>—</td><td>—</td><td>—</td>
+                  <td>20</td><td>—</td>
+                </tr>
+                <tr>
+                  <td>G4・G100S<br>GL4・GLL4</td><td>GT100<br>GT100S</td>
+                  <td>50〜100</td><td>45</td>
+                  <td>60</td><td>45</td><td>—</td>
+                  <td>95</td><td>150</td><td>200</td><td>85</td>
+                  <td>40</td><td>50</td>
+                </tr>
+                <tr>
+                  <td>G6・G150S<br>GL6・GLL6</td><td>GT150<br>GT150S</td>
+                  <td>60〜150</td><td>60</td>
+                  <td>70</td><td>60</td><td>—</td>
+                  <td>150</td><td>190</td><td>250</td><td>140</td>
+                  <td>60</td><td>75</td>
+                </tr>
+                <tr>
+                  <td>G8・G200S<br>GL8・GLL8</td><td>GT200<br>GT200S</td>
+                  <td>80〜200</td><td>100</td>
+                  <td>100</td><td>100</td><td>—</td>
+                  <td>240</td><td>275</td><td>350</td><td>235</td>
+                  <td>80</td><td>100</td>
+                </tr>
+                <tr>
+                  <td>G10<br>GL10・GLL10</td><td>GT250</td>
+                  <td>100〜250</td><td>120</td>
+                  <td>125</td><td>120</td><td>—</td>
+                  <td>250</td><td>300</td><td>400</td><td>245</td>
+                  <td>100</td><td>125</td>
+                </tr>
+                <tr>
+                  <td>G12<br>GL12・GLL12</td><td>GT12</td>
+                  <td>120〜300</td><td>125</td>
+                  <td>170</td><td>125</td><td>—</td>
+                  <td>275</td><td>350</td><td>450</td><td>275</td>
+                  <td>120</td><td>125</td>
+                </tr>
+                <tr>
+                  <td>G15・GL15</td><td>GT15</td>
+                  <td>150〜375</td><td>130</td>
+                  <td>185</td><td>130</td><td>—</td>
+                  <td>320</td><td>400</td><td>—</td><td>320</td>
+                  <td>150</td><td>150</td>
+                </tr>
+                <tr>
+                  <td>G18・GL18</td><td>GT18</td>
+                  <td>180〜450</td><td>140</td>
+                  <td>200</td><td>140</td><td>—</td>
+                  <td>370</td><td>440</td><td>—</td><td>370</td>
+                  <td>180</td><td>180</td>
+                </tr>
+                <tr>
+                  <td>G24</td><td>—</td>
+                  <td>280〜600</td><td>—</td>
+                  <td>175</td><td>—</td><td>—</td>
+                  <td>575</td><td>—</td><td>—</td><td>—</td>
+                  <td>240</td><td>—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 作業条件表 -->
+    <div class="tab-pane" id="gear-tab-work">
+      <div class="content-card">
+        <div class="card-header">作業条件表</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th rowspan="2">品番<br>2本爪</th>
+                  <th rowspan="2">品番<br>3本爪</th>
+                  <th colspan="2">おねじの<br>回転トルク N·m</th>
+                  <th colspan="2">ハンドル長さ<br>mm</th>
+                  <th colspan="2">ハンドル先端<br>操作力 N</th>
+                </tr>
+                <tr>
+                  <th>2本爪</th><th>3本爪</th>
+                  <th>2本爪</th><th>3本爪</th>
+                  <th>2本爪</th><th>3本爪</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>G3</td><td>—</td>
+                  <td>22以下</td><td>—</td>
+                  <td>250以下</td><td>—</td>
+                  <td>88以下</td><td>—</td>
+                </tr>
+                <tr>
+                  <td>G4・G100S<br>GL4・GLL4</td><td>GT100<br>GT100S</td>
+                  <td>50以下</td><td>80以下</td>
+                  <td>400以下</td><td>400以下</td>
+                  <td>167以下</td><td>200以下</td>
+                </tr>
+                <tr>
+                  <td>G6・G150S<br>GL6・GLL6</td><td>GT150<br>GT150S</td>
+                  <td>95以下</td><td>150以下</td>
+                  <td>400以下</td><td>400以下</td>
+                  <td>238以下</td><td>375以下</td>
+                </tr>
+                <tr>
+                  <td>G8・G200S<br>GL8・GLL8</td><td>GT200<br>GT200S</td>
+                  <td>155以下</td><td>250以下</td>
+                  <td>400以下</td><td>500以下</td>
+                  <td>388以下</td><td>500以下</td>
+                </tr>
+                <tr>
+                  <td>G10<br>GL10・GLL10</td><td>GT250</td>
+                  <td>250以下</td><td>350以下</td>
+                  <td>500以下</td><td>500以下</td>
+                  <td>500以下</td><td>700以下</td>
+                </tr>
+                <tr>
+                  <td>G12<br>GL12・GLL12</td><td>GT12</td>
+                  <td>345以下</td><td>430以下</td>
+                  <td>500以下</td><td>500以下</td>
+                  <td>690以下</td><td>860以下</td>
+                </tr>
+                <tr>
+                  <td>G15・GL15</td><td>GT15</td>
+                  <td>500以下</td><td>650以下</td>
+                  <td>600以下</td><td>600以下</td>
+                  <td>833以下</td><td>1083以下</td>
+                </tr>
+                <tr>
+                  <td>G18・GL18</td><td>GT18</td>
+                  <td>700以下</td><td>900以下</td>
+                  <td>1000以下</td><td>1000以下</td>
+                  <td>700以下</td><td>900以下</td>
+                </tr>
+                <tr>
+                  <td>G24</td><td>—</td>
+                  <td>950以下</td><td>—</td>
+                  <td>1000以下</td><td>—</td>
+                  <td>950以下</td><td>—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- ━━ ボルト・ナット ━━ -->
+  <div class="page" id="page-bolt">
+    <div class="page-title">🔩 ボルト・ナット</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'bolt','span')">対辺寸法表</button>
+      <button class="tab-btn" onclick="switchTab(this,'bolt','chem')">化学成分表</button>
+    </div>
+
+    <!-- 対辺寸法表 -->
+    <div class="tab-pane active" id="bolt-tab-span">
+      <div class="content-card">
+        <div class="card-header">ボルト・ナット対辺寸法表</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">※（　）内はあまり使用されていません</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>W対辺<br>S(mm)</th>
+                  <th>六角<br>ボルト・ナット<br>ISO</th>
+                  <th>小形六角<br>ボルト・ナット</th>
+                  <th>六角穴付き<br>ボルト・ナット</th>
+                  <th>六角穴付き<br>ボルト</th>
+                  <th>六角穴付き<br>止めネジ</th>
+                  <th>ウィット<br>ネジ</th>
+                  <th>メートル<br>ネジ</th>
+                </tr>
+              </thead>
+              <tbody id="bolt-span-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 化学成分表 -->
+    <div class="tab-pane" id="bolt-tab-chem">
+      <div class="content-card">
+        <div class="card-header">製品使用材料　化学成分表（%）</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">♦ = 前行と同じ　※入数及び仕様は予告なく変更することがあります。</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>名称</th><th>JIS番号</th>
+                  <th>C</th><th>Si</th><th>Mn</th><th>P</th><th>S</th>
+                  <th>Cu</th><th>Ni</th><th>Cr</th><th>Mo</th><th>V</th>
+                </tr>
+              </thead>
+              <tbody id="bolt-chem-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// DATA
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const SUS_PIPE = [
+  ['1/8',6,10.5,1.2,1.5,1.7,2.4],
+  ['1/4',8,13.8,1.65,2,2.2,3],
+  ['3/8',10,17.3,1.65,2,2.3,3.2],
+  ['1/2',15,21.7,2.1,2.5,2.8,3.7],
+  ['3/4',20,27.2,2.1,2.5,2.9,3.9],
+  ['1',25,34,2.8,3,3.4,4.5],
+  ['1 1/4',32,42.7,2.8,3,3.6,4.9],
+  ['1 1/2',40,48.6,2.8,3,3.7,5.1],
+  ['2',50,60.5,2.8,3.5,3.9,5.5],
+  ['2 1/2',65,76.3,3,3.5,5.2,7],
+  ['3',80,89.1,3,4,5.5,7.6],
+  ['4',100,114.3,3,4,6,8.6],
+  ['5',125,139.8,3.4,5,6.6,9.5],
+  ['6',150,165.2,3.4,5,7.1,11],
+  ['8',200,216.3,4,6.5,8.2,12.7],
+  ['10',250,267.4,4,6.5,9.3,15.1],
+];
+
+const CS_PIPE = [
+  ['1/8',6,10.5,2,'—',1.7,2.4],
+  ['1/4',8,13.8,2.3,'—',2.2,3],
+  ['3/8',10,17.3,2.3,'—',2.3,3.2],
+  ['1/2',15,21.7,2.8,'—',2.8,3.7],
+  ['3/4',20,27.2,2.8,'—',2.9,3.9],
+  ['1',25,34,3.2,'—',3.4,4.5],
+  ['1 1/4',32,42.7,3.5,'—',3.6,4.9],
+  ['1 1/2',40,48.6,3.5,'—',3.7,5.1],
+  ['2',50,60.5,3.8,3.2,3.9,5.5],
+  ['2 1/2',65,76.3,4.2,4.5,5.2,7],
+  ['3',80,89.1,4.2,4.5,5.5,7.6],
+  ['4',100,114.3,4.5,4.9,6,8.6],
+  ['5',125,139.8,4.5,5.1,6.6,9.5],
+  ['6',150,165.2,5,5.5,7.1,11],
+  ['8',200,216.3,5.8,9.4,8.2,12.7],
+  ['10',250,267.4,6.6,6.4,9.3,15.1],
+];
+
+// [A, OD, N, bolt, SBN-RF, SBN-MF, SBN-TG, MBN-RF, MBN-MF, MBN-TG]  G=4.5mm
+const FITTING = [
+  ['1/2',15,15.8,38.1,25.4,'—'],
+  ['3/4',20,15.8,38.1,28.6,38.1],
+  ['1',25,15.8,38.1,38.1,50.8],
+  ['1 1/4',32,19.7,47.6,47.6,50.8],
+  ['1 1/2',40,23.7,57.2,57.2,63.5],
+  ['2',50,31.6,76.2,63.2,76.2],
+  ['2 1/2',65,39.5,95.3,76.2,88.9],
+  ['3',80,47.3,114.3,85.7,88.9],
+  ['4',100,63.1,152.4,104.8,101.6],
+  ['5',125,78.9,190.5,123.8,127],
+  ['6',150,94.7,228.6,142.9,139.7],
+  ['8',200,126.3,304.8,177.8,152.4],
+  ['10',250,157.8,381,215.9,177.8],
+];
+
+const UBOLT = [
+  ['3/8',10,22],
+  ['1/2',15,34],
+  ['3/4',20,40],
+  ['1',25,45],
+  ['1 1/4',32,53],
+  ['1 1/2',40,60],
+  ['2',50,74],
+  ['2 1/2',65,90],
+  ['3',80,105],
+  ['4',100,130],
+  ['5',125,155],
+  ['6',150,185],
+  ['8',200,235],
+];
+
+const GASKET = [
+  ['3/8',10,44,18,52,18],
+  ['1/2',15,49,22,57,22],
+  ['3/4',20,54,28,63,28],
+  ['1',25,64,35,73,35],
+  ['1 1/4',32,77,44,83,44],
+  ['1 1/2',40,82,49,88,52],
+  ['2',50,91,64,102,62],
+  ['2 1/2',65,116,77,122,77],
+  ['3',80,127,91,132,88],
+  ['4',100,147,116,157,116],
+  ['5',125,182,140,188,140],
+  ['6',150,212,166,218,166],
+  ['8',200,258,218,268,218],
+  ['10',250,323,268,331,268],
+];
+
+// アイボルト(bolt)・アイナット(nut) - 垂直吊り,45°吊り(2個) 各kN(kgf)
+const EYEBOLT = [
+  ['M6',   '—',          '—',          '0.588(60)',  '0.588(60)'],
+  ['M8',   '0.785(80)',  '0.785(80)',  '0.785(80)',  '0.785(80)'],
+  ['M10',  '1.47(150)',  '1.47(150)',  '1.47(150)',  '1.47(150)'],
+  ['M12',  '2.16(220)',  '2.16(220)',  '2.16(220)',  '2.16(220)'],
+  ['M14',  '3.23(330)',  '3.23(330)',  '4.41(450)',  '4.41(450)'],
+  ['M16',  '4.41(450)',  '4.41(450)',  '4.41(450)',  '4.41(450)'],
+  ['M18',  '5.29(540)',  '5.29(540)',  '6.18(630)',  '6.18(630)'],
+  ['M20',  '6.18(630)',  '6.18(630)',  '6.18(630)',  '6.18(630)'],
+  ['M22',  '7.74(790)',  '7.74(790)',  '7.74(790)',  '7.74(790)'],
+  ['M24',  '9.32(950)',  '9.32(950)',  '9.32(950)',  '9.32(950)'],
+  ['M27',  '11.7(1200)', '11.7(1200)','14.7(1500)', '14.7(1500)'],
+  ['M30',  '14.7(1500)', '14.7(1500)','14.7(1500)', '14.7(1500)'],
+  ['M33',  '14.7(1500)', '14.7(1500)','ー',         'ー'],
+  ['M36',  '22.6(2300)', '22.6(2300)','22.6(2300)', '22.6(2300)'],
+  ['M42',  '33.3(3400)', '33.3(3400)','33.3(3400)', '33.3(3400)'],
+  ['M48',  '44.1(4500)', '44.1(4500)','44.1(4500)', '44.1(4500)'],
+  ['M64',  '88.3(9000)', '88.3(9000)','88.2(9000)', '88.2(9000)'],
+  ['M80',  '147(15000)', '147(15000)','147(15000)', '147(15000)'],
+  ['M90',  '177(18000)', '177(18000)','ー',         'ー'],
+];
+
+const SHACKLE = [
+  [6,'0.2',1.96,11,17,24,9,8,'M8',0.04],
+  [8,'0.35',3.43,14,21,32,11,10,'M10',0.08],
+  [10,'0.6',5.88,17,25,40,13,12,'M12',0.14],
+  [12,'0.9',8.82,20,32,48,16,15,'M14',0.28],
+  [14,'1.2',11.76,24,36,56,18,17,'M16',0.4],
+  [16,'1.5',14.7,26,40,64,20,19,'M18',0.57],
+  [18,2,19.6,29,45,72,22,21,'M20',0.78],
+  [20,'2.5',24.5,31,50,80,25,24,'M24',1.05],
+  [22,3,29.4,34,55,88,27,26,'M24',1.45],
+  [24,'3.6',35.28,39,62,96,31,30,'M30',2.05],
+  [26,'4.2',41.16,41,66,104,33,32,'M30',2.5],
+  [28,'4.8',47.04,43,70,112,35,34,'M33',3.0],
+  [30,'5.4',52.92,45,75,120,37,36,'M36',3.65],
+  [32,'6.2',60.76,48,80,128,39,38,'M36',4.5],
+  [34,7,68.6,50,85,136,41,40,'M39',5.2],
+  [36,8,78.4,54,90,144,43,42,'M42',6.5],
+  [38,9,88.2,57,95,152,47,46,'M45',7.5],
+  [40,10,98,60,100,160,49,48,'M48',8.8],
+];
+
+const WIRE = [
+  ['6mm','２分',1.81,'0.30','0.57','0.57'],
+  ['8mm','2分5厘','3.22','0.53','1.02','1.0'],
+  ['9mm','３分','4.07','0.67','1.28','1.2'],
+  ['10mm','3分5厘','5.03','0.83','1.59','1.5'],
+  ['12mm','４分','7.24','1.20','2.28','2.2'],
+  ['14mm','4分5厘','9.85','1.63','3.11','3.1'],
+  ['16mm','５分','12.9','2.13','4.06','4.0'],
+  ['18mm','６分','16.3','2.69','5.14','5.1'],
+  ['20mm','6分5厘','20.1','3.34','6.34','6.3'],
+  ['22mm','７分','24.3','4.04','7.71','7.6'],
+  ['24mm','８分','28.9','4.81','9.15','9.1'],
+  ['26mm','8分5厘','33.9','5.64','10.7','10.7'],
+  ['28mm','９分','39.4','6.57','12.4','12.4'],
+  ['30mm','１０分','45.2','7.51','14.3','14.3'],
+  ['32mm','10分5厘','51.3','8.56','16.3','16.3'],
+  ['34mm','１１分','58.0','9.66','ー','18.3'],
+  ['36mm','１２分','65.0','10.8','20.5','20.5'],
+  ['38mm','12分5厘','72.4','12.0','ー','22.9'],
+  ['40mm','１３分','80.4','13.3','25.4','25.4'],
+];
+
+const PUMP_CLEARANCE = [
+  ['50以下',       1.05],
+  ['50～63以下',   1.14],
+  ['63～80以下',   1.20],
+  ['80～100以下',  1.26],
+  ['100～125以下', 1.35],
+  ['125～160以下', 1.50],
+  ['160～200以下', 1.68],
+  ['200～250以下', 1.89],
+];
+
+const CHAIN = [
+  ['RS-25', '38.1mm','38.7mm','38.5mm'],
+  ['RS-35', '57.2mm','58.0mm','57.9mm'],
+  ['RS-40', '76.2mm','77.3mm','77.1mm'],
+  ['RS-50', '95.3mm','96.7mm','96.4mm'],
+  ['RS-60', '114.3mm','116.0mm','115.7mm'],
+  ['RS-80', '152.4mm','154.7mm','154.2mm'],
+  ['RS-100','190.5mm','193.4mm','192.8mm'],
+  ['RS-120','228.6mm','232.0mm','231.3mm'],
+  ['RS-140','266.7mm','270.7mm','269.9mm'],
+  ['RS-200','381.0mm','386.7mm','385.5mm'],
+];
+
+// 嵌め合い基準 最大許容隙間 (mm) - 部品名, Φ18-30, Φ30-50, Φ50-80, Φ80-120, Φ120-180, Φ180-250
+const CLEARANCE = [
+  ['インペラーとシャフト',        0.06, 0.07,  0.08,  0.09,  0.10,  0.10],
+  ['スリーブとシャフト',          0.06, 0.07,  0.08,  0.09,  0.10,  0.10],
+  ['ベアリングとベアリングケース', 0.02, 0.02,  0.03,  0.03,  0.035, 0.04],
+  ['ベアリングとシャフト',        0.02, 0.025, 0.025, 0.03,  0.03,  0.04],
+  ['Ｖプーリーとシャフト',        0.025,0.03,  0.03,  0.035, 0.035, 0.045],
+  ['カップリングとシャフト',      0.025,0.03,  0.03,  0.035, 0.035, 0.045],
+];
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// BUILD TABLES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function rows(data) {
+  return data.map(r => '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>').join('');
+}
+// ━━━━━ バルカー うず巻形ガスケット (GC12カタログ JIS B2404-2006) ━━━━━
+// No.8596 内外輪付 クリーンタイト (表3) - JIS平面座用 単位mm A,D2,D3,D4
+const V8596_10K = [
+  [10,18,24,52],[15,22,28,57],[20,28,34,62],[25,34,40,74],
+  [32,43,51,84],[40,49,57,89],[50,61,69,104],[65,77,87,124],
+  [80,91,101,134],[100,115,127,159],[125,141,153,190],[150,170,182,220],
+  [200,220,236,270],[250,271,287,332],[300,321,337,377],
+];
+const V8596_20K = [
+  [10,18,24,52],[15,22,28,57],[20,28,34,62],[25,34,40,74],
+  [32,43,51,84],[40,49,57,89],[50,61,69,104],[65,77,87,124],
+  [80,89,99,140],[100,115,127,165],[125,140,152,202],[150,166,182,237],
+  [200,217,233,282],[250,268,287,354],[300,319,337,404],
+];
+const V8596_30K = [
+  [10,18,24,59],[15,22,28,64],[20,28,34,69],[25,34,40,79],
+  [32,43,51,89],[40,49,57,100],[50,61,69,114],[65,68,78,140],
+  [80,80,90,150],[100,92,116,162],[125,128,141,172],[150,153,165,207],
+  [200,202,218,249],[250,251,271,294],[300,300,320,360],
+];
+// No.8591 外輪付 クリーンタイト (表1) - JIS平面座用 単位mm A,D2,D3,D4
+const V8591_10K = [
+  [10,24,37,52],[15,28,41,57],[20,34,47,62],[25,40,53,74],
+  [32,51,67,84],[40,57,73,89],[50,69,89,104],[65,87,107,124],
+  [80,98,118,134],[100,123,143,159],[125,148,173,190],[150,174,199,220],
+  [200,227,252,270],[250,278,310,332],[300,329,361,377],
+];
+const V8591_20K = [
+  [10,24,37,52],[15,28,41,57],[20,34,47,62],[25,40,53,74],
+  [32,51,67,84],[40,57,73,89],[50,69,89,104],[65,87,107,124],
+  [80,99,119,140],[100,127,152,165],[125,152,177,202],[150,182,214,237],
+  [200,233,265,282],[250,288,328,354],[300,339,379,404],
+];
+const V8591_30K = [
+  [10,24,37,59],[15,28,41,64],[20,34,47,69],[25,40,53,79],
+  [32,51,67,89],[40,57,73,100],[50,69,89,114],[65,78,98,140],
+  [80,90,110,150],[100,116,141,172],[125,140,165,207],[150,165,197,249],
+  [200,218,250,294],[250,271,311,360],[300,320,360,418],
+];
+// No.8592 内輪付 クリーンタイト (表5) - はめ込み形 10K〜30K 単位mm A,D1,D2,D3
+const V8592 = [
+  [10,19,25,38],[15,23,29,42],[20,31,37,50],[25,38,44,60],
+  [32,46,54,70],[40,51,59,75],[50,62,70,90],[65,80,90,110],
+  [80,90,100,120],[100,113,125,145],[125,138,150,175],[150,171,187,215],
+  [200,215,231,259],[250,268,288,324],[300,318,338,374],
+];
+// No.8590 基本形 クリーンタイト (表6) - 溝形・はめ込み形 単位mm A,溝D2,溝D3,はD2,はD3
+const V8590 = [
+  [10,28,38,25,38],[15,32,42,29,42],[20,38,50,37,50],[25,45,60,44,60],
+  [32,55,70,54,70],[40,60,75,59,75],[50,70,90,70,90],[65,90,110,90,110],
+  [80,100,120,100,120],[100,125,145,125,145],[125,150,175,150,175],
+  [150,190,215,187,215],[200,230,259,231,259],[250,296,324,288,324],
+  [300,341,374,338,374],
+];
+
+// ━━━━━ バルカー ANSI/JPI うず巻形ガスケット (GC12カタログ 表7, JPI-7S-41-2005) ━━━━━
+// 8596(内外輪付)/8591(外輪付) ANSI RF平面座用
+// 形式: [NPS文字, A呼び径, D2本体内径, D3本体外径, D4外輪外径, D1内輪内径] 単位mm
+const VA_ANSI_150 = [
+  ['1/2',15, 14.2,19.0, 47.8,31.8],['3/4',20, 20.6,25.4, 57.2,39.6],
+  ['1',  25, 26.9,31.8, 66.8,47.8],['1 1/4',32,38.1,47.8,76.2,60.5],
+  ['1 1/2',40,44.4,54.1,85.9,69.8],['2',50, 55.6,69.8,104.9,85.9],
+  ['2 1/2',65,66.5,82.6,124.0,98.6],['3',80, 81.0,101.6,136.7,120.6],
+  ['4',100,106.4,127.0,174.8,149.4],['5',125,131.8,155.7,196.8,177.8],
+  ['6',150,157.2,182.6,222.2,209.6],['8',200,215.9,233.4,279.4,263.7],
+  ['10',250,268.2,287.3,339.9,317.5],['12',300,317.5,339.9,409.7,374.6],
+];
+const VA_ANSI_300 = [
+  ['1/2',15, 14.2,19.0, 54.1,31.8],['3/4',20, 20.6,25.4, 66.8,39.6],
+  ['1',  25, 26.9,31.8, 73.2,47.8],['1 1/4',32,38.1,47.8,82.6,60.5],
+  ['1 1/2',40,44.4,54.1,95.2,69.8],['2',50, 55.6,69.8,111.3,85.9],
+  ['2 1/2',65,66.5,82.6,130.3,98.6],['3',80, 81.0,101.6,149.4,120.6],
+  ['4',100,106.4,127.0,181.1,149.4],['5',125,131.8,155.7,215.9,177.8],
+  ['6',150,157.2,182.6,251.0,209.6],['8',200,215.9,233.4,308.1,263.7],
+  ['10',250,268.2,287.3,362.0,317.5],['12',300,317.5,339.9,422.4,374.6],
+];
+const VA_ANSI_600 = [
+  ['1/2',15, 14.2,19.0, 54.1,31.8],['3/4',20, 20.6,25.4, 66.8,39.6],
+  ['1',  25, 26.9,31.8, 73.2,47.8],['1 1/4',32,38.1,47.8,82.6,60.5],
+  ['1 1/2',40,44.4,54.1,95.2,69.8],['2',50, 55.6,69.8,111.3,85.9],
+  ['2 1/2',65,66.5,82.6,130.3,98.6],['3',80, 78.7,101.6,149.4,120.6],
+  ['4',100,102.6,120.6,193.8,149.4],['5',125,128.3,147.6,241.3,177.8],
+  ['6',150,154.9,174.8,266.7,209.6],['8',200,205.7,225.6,320.8,263.7],
+  ['10',250,255.3,274.6,400.0,317.5],['12',300,307.3,327.2,457.2,374.6],
+];
+const VA_ANSI_900 = [
+  ['1/2',15, 14.2,19.0, 63.5,31.8],['3/4',20, 20.6,25.4, 69.8,39.6],
+  ['1',  25, 26.9,31.8, 79.5,47.8],['1 1/4',32,33.3,39.6,88.9,60.5],
+  ['1 1/2',40,41.4,47.8,98.6,69.8],['2',50, 52.3,58.7,143.0,85.9],
+  ['2 1/2',65,63.5,69.8,165.1,98.6],['3',80, 78.7,95.2,168.4,120.6],
+  ['4',100,102.6,120.6,206.5,149.4],['5',125,128.3,147.6,247.6,177.8],
+  ['6',150,154.9,174.8,289.1,209.6],['8',200,196.8,222.2,358.9,257.3],
+  ['10',250,246.1,276.4,435.1,311.2],['12',300,292.1,323.8,498.6,368.3],
+];
+const VA_ANSI_1500 = [
+  ['1/2',15, 14.2,19.0, 63.5,31.8],['3/4',20, 20.6,25.4, 69.8,39.6],
+  ['1',  25, 26.9,31.8, 79.5,47.8],['1 1/4',32,33.3,39.6,88.9,60.5],
+  ['1 1/2',40,41.4,47.8,98.6,69.8],['2',50, 52.3,58.7,143.0,85.9],
+  ['2 1/2',65,63.5,69.8,165.1,98.6],['3',80, 78.7,92.2,174.8,120.6],
+  ['4',100, 97.8,117.6,209.6,149.4],['5',125,124.5,143.0,254.0,177.8],
+  ['6',150,147.3,171.4,282.7,209.6],['8',200,196.8,215.9,352.6,257.3],
+  ['10',250,246.1,266.7,435.1,311.2],['12',300,292.1,323.8,520.7,368.3],
+];
+// 8592 内輪付 ANSI MF（ラージメール・フィメール）座
+// JPI-7S-41-2005 表11 [NPS,A,D1,D2,D3]
+const VA8592_ANSI = [
+  ['1/2',15,14.2,19.0,34.9],['3/4',20,20.6,25.4,42.9],['1',25,26.9,31.8,50.8],
+  ['1 1/4',32,38.1,47.8,63.5],['1 1/2',40,44.4,54.1,73.0],['2',50,55.6,69.8,92.1],
+  ['2 1/2',65,66.5,82.6,104.8],['3',80,81.0,101.6,127.0],
+  ['4',100,106.4,127.0,157.2],['5',125,131.8,155.7,185.7],
+  ['6',150,157.2,182.6,215.9],['8',200,215.9,233.4,269.9],
+  ['10',250,268.2,287.3,323.8],['12',300,317.5,339.9,381.0],
+];
+// 8590 基本形 ANSI TG（ラージタング・グループ）座
+// JPI-7S-41-2005 表11 [NPS,A,D2,D3]
+const VA8590_ANSI = [
+  ['1/2',15,19.0,34.9],['3/4',20,25.4,42.9],['1',25,31.8,50.8],
+  ['1 1/4',32,47.8,63.5],['1 1/2',40,54.1,73.0],['2',50,69.8,92.1],
+  ['2 1/2',65,82.6,104.8],['3',80,101.6,127.0],
+  ['4',100,127.0,157.2],['5',125,155.7,185.7],
+  ['6',150,182.6,215.9],['8',200,233.4,269.9],
+  ['10',250,287.3,323.8],['12',300,339.9,381.0],
+];
+
+// 8596用: D1付き5列, 8591用: D1省略4列
+const rowsAnsi8596 = d => d.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('');
+const rowsAnsi8591 = d => d.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join('');
+
+document.getElementById('v8596-a150-tbody').innerHTML  = rowsAnsi8596(VA_ANSI_150);
+document.getElementById('v8596-a300-tbody').innerHTML  = rowsAnsi8596(VA_ANSI_300);
+document.getElementById('v8596-a600-tbody').innerHTML  = rowsAnsi8596(VA_ANSI_600);
+document.getElementById('v8596-a900-tbody').innerHTML  = rowsAnsi8596(VA_ANSI_900);
+document.getElementById('v8596-a1500-tbody').innerHTML = rowsAnsi8596(VA_ANSI_1500);
+document.getElementById('v8591-a150-tbody').innerHTML  = rowsAnsi8591(VA_ANSI_150);
+document.getElementById('v8591-a300-tbody').innerHTML  = rowsAnsi8591(VA_ANSI_300);
+document.getElementById('v8591-a600-tbody').innerHTML  = rowsAnsi8591(VA_ANSI_600);
+document.getElementById('v8591-a900-tbody').innerHTML  = rowsAnsi8591(VA_ANSI_900);
+document.getElementById('v8591-a1500-tbody').innerHTML = rowsAnsi8591(VA_ANSI_1500);
+document.getElementById('v8592-ansi-tbody').innerHTML  = rows(VA8592_ANSI);
+document.getElementById('v8590-ansi-tbody').innerHTML  = rows(VA8590_ANSI);
+
+// ━━━ バルカー JIS 63K (GC12 JIS B2220 表1・表3・表5・表6) ━━━
+// V8596 内外輪付 63K [A, D2, D3, D4]  出典:表3
+const V8596_63K = [
+  [10,21,34,64],[15,24,37,69],[20,29,42,75],[25,35,48,80],
+  [32,44,60,90],[40,51,67,107],[50,63,79,125],[65,78,98,152],
+  [80,90,110,162],[100,116,141,194],[125,140,165,235],[150,165,197,275],
+  [200,218,250,328],[250,271,311,394],[300,320,360,446],
+];
+// V8591 外輪付 63K [A, D2, D3, D4]  出典:表1
+const V8591_63K = [
+  [10,21,34,59],[15,24,37,64],[20,29,42,69],[25,35,48,79],
+  [32,44,60,89],[40,51,67,100],[50,63,79,114],[65,78,98,140],
+  [80,90,110,150],[100,116,141,182],[125,140,165,224],[150,165,197,265],
+  [200,218,250,315],[250,271,311,378],[300,320,360,434],
+];
+// V8592 内輪付 63K(40K・63K参考) [A, D1, D2, D3]  出典:表5(参考)
+const V8592_63K = [
+  [15,23,29,42],[20,31,37,50],[25,38,44,60],[32,46,54,70],
+  [40,51,59,75],[50,62,70,90],[65,80,90,110],[80,90,100,120],
+  [100,113,125,145],[125,138,150,175],[150,171,187,215],
+  [200,215,231,259],[250,268,288,324],[300,318,338,374],
+];
+// V8590 基本形 63K(40K・63K参考) [A, 溝D2, 溝D3, はD2, はD3]  出典:表6(参考)
+const V8590_63K = [
+  [15,32,42,29,42],[20,38,50,37,50],[25,45,60,44,60],[32,55,70,54,70],
+  [40,60,75,59,75],[50,70,90,70,90],[65,90,110,90,110],[80,100,120,100,120],
+  [100,125,145,125,145],[125,150,175,150,175],[150,190,215,187,215],
+  [200,230,259,231,259],[250,296,324,288,324],[300,341,374,338,374],
+];
+
+document.getElementById('v8596-63k-tbody').innerHTML = rows(V8596_63K);
+document.getElementById('v8591-63k-tbody').innerHTML = rows(V8591_63K);
+document.getElementById('v8592-63k-tbody').innerHTML = rows(V8592_63K);
+document.getElementById('v8590-63k-tbody').innerHTML = rows(V8590_63K);
+
+document.getElementById('v8596-10k-tbody').innerHTML = rows(V8596_10K);
+document.getElementById('v8596-20k-tbody').innerHTML = rows(V8596_20K);
+document.getElementById('v8596-30k-tbody').innerHTML = rows(V8596_30K);
+document.getElementById('v8591-10k-tbody').innerHTML = rows(V8591_10K);
+document.getElementById('v8591-20k-tbody').innerHTML = rows(V8591_20K);
+document.getElementById('v8591-30k-tbody').innerHTML = rows(V8591_30K);
+document.getElementById('v8592-tbody').innerHTML = rows(V8592);
+document.getElementById('v8590-tbody').innerHTML = rows(V8590);
+
+document.getElementById('sus-tbody').innerHTML = rows(SUS_PIPE);
+document.getElementById('cs-tbody').innerHTML = rows(CS_PIPE);
+// JIS 5K/10K [A,OD,N,bolt, SBN-FF,SBN-RF,SBN-MF, MBN-FF,MBN-RF,MBN-MF] G=4.5mm 修正済
+const FLANGE_5K = [
+  [10,75,4,'M10',45,50,50,35,40,35],
+  [15,80,4,'M10',45,50,50,35,40,35],
+  [20,85,4,'M10',50,50,50,40,40,40],
+  [25,95,4,'M10',50,50,50,40,40,40],
+  [32,115,4,'M12',55,60,60,45,45,45],
+  [40,120,4,'M12',55,60,60,45,45,45],
+  [50,130,4,'M12',60,65,65,50,50,50],
+  [65,155,4,'M12',60,65,65,50,50,50],
+  [80,180,4,'M16',70,70,70,50,55,55],
+  [100,200,8,'M16',70,75,75,55,60,55],
+  [125,235,8,'M16',70,75,75,55,60,55],
+  [150,265,8,'M16',75,80,75,60,60,60],
+  [200,320,8,'M16',80,85,80,65,65,65],
+  [250,385,12,'M16',85,85,85,65,70,70],
+  [300,430,12,'M20',90,95,95,70,75,75],
+];
+const FLANGE_10K = [
+  [10,90,4,'M12',55,60,60,45,45,45],
+  [15,95,4,'M12',55,60,60,45,45,45],
+  [20,100,4,'M12',60,65,65,50,50,50],
+  [25,125,4,'M16',70,70,70,50,55,55],
+  [32,135,4,'M16',70,75,75,55,60,55],
+  [40,140,4,'M16',70,75,75,55,60,55],
+  [50,155,4,'M16',70,75,75,55,60,55],
+  [65,175,4,'M16',75,80,75,60,60,60],
+  [80,185,8,'M16',75,80,75,60,60,60],
+  [100,210,8,'M16',75,80,75,60,60,60],
+  [125,250,8,'M20',90,90,90,65,70,70],
+  [150,280,8,'M20',90,95,95,70,75,75],
+  [200,330,12,'M20',90,95,95,70,75,75],
+  [250,400,12,'M22',100,100,100,75,80,80],
+  [300,445,12,'M22',100,100,100,75,80,80],
+];
+const FLANGE_20K = [
+  [10,90,4,'M12',65,60,60,50,50,50],
+  [15,95,4,'M12',65,60,60,50,50,50],
+  [20,100,4,'M12',65,65,65,55,55,50],
+  [25,125,4,'M16',75,75,70,55,55,55],
+  [32,135,4,'M16',80,80,75,65,60,60],
+  [40,140,4,'M16',80,80,75,65,60,60],
+  [50,155,8,'M16',80,80,75,65,60,60],
+  [65,175,8,'M16',85,80,80,65,65,65],
+  [80,200,8,'M20',95,95,90,75,75,70],
+  [100,225,8,'M20',100,100,95,80,75,75],
+  [125,270,8,'M22',105,105,105,85,85,80],
+  [150,305,12,'M22',110,110,105,90,85,85],
+  [200,350,12,'M22',115,115,110,95,90,90],
+  [250,430,12,'M24',125,125,125,105,100,100],
+  [300,480,16,'M24',135,130,125,110,105,105],
+];
+
+// JIS 30K [A,OD,N,bolt, SBN-RF,SBN-MF,SBN-TG, MBN-RF,MBN-MF,MBN-TG] G=4.5mm 修正済
+const FLANGE_30K = [
+  [10,110,4,'M16',75,75,70,55,55,55],
+  [15,115,4,'M16',80,75,75,60,60,60],
+  [20,120,4,'M16',80,75,75,60,60,60],
+  [25,130,4,'M16',80,80,80,65,65,65],
+  [32,140,4,'M16',90,85,85,70,70,65],
+  [40,160,4,'M20',95,95,90,75,75,70],
+  [50,165,8,'M16',90,85,85,70,70,65],
+  [65,200,8,'M20',105,100,100,85,80,80],
+  [80,210,8,'M20',110,105,105,85,85,85],
+  [100,240,8,'M22',120,115,115,95,95,95],
+  [125,275,8,'M22',125,125,125,105,105,100],
+  [150,325,12,'M24',135,135,130,110,110,105],
+  [200,370,12,'M24',145,140,140,120,115,115],
+  [250,450,12,'M30',165,160,160,135,135,130],
+  [300,515,16,'M30',175,170,165,145,140,140],
+  [350,560,16,'M30',175,175,170,150,145,145],
+  [400,630,16,'M36',195,195,190,165,160,160],
+];
+
+const FLANGE_63K = [
+  [15,120,4,'M16',90,85,85,70,70,70],
+  [20,135,4,'M20',100,100,100,80,80,75],
+  [25,140,4,'M20',105,105,100,85,80,80],
+  [32,150,4,'M20',110,110,110,90,90,85],
+  [40,175,4,'M22',120,115,115,95,95,95],
+  [50,185,8,'M20',120,120,115,100,95,95],
+  [65,220,8,'M22',130,130,125,110,105,105],
+  [80,230,8,'M22',135,135,130,115,110,110],
+  [100,270,8,'M24',145,145,145,125,120,120],
+  [125,325,8,'M30',165,165,165,140,135,135],
+  [150,365,12,'M30',175,175,170,145,145,145],
+  [200,425,12,'M30',185,185,185,160,155,155],
+  [250,500,12,'M36',210,210,205,180,175,175],
+  [300,560,16,'M36',230,230,225,200,195,195],
+  [350,615,16,'M42',245,245,240,210,210,205],
+  [400,680,16,'M42',265,260,255,225,225,220],
+];
+
+const FLANGE_A150 = [
+  ['1/2',15,90,4,'1/2"(M12)',55,55,55,45,40,40],
+  ['3/4',20,100,4,'1/2"(M12)',60,60,55,45,45,45],
+  ['1',25,110,4,'1/2"(M12)',65,60,60,50,50,45],
+  ['1 1/4',32,115,4,'1/2"(M12)',65,65,60,55,50,50],
+  ['1 1/2',40,125,4,'1/2"(M12)',70,65,65,55,55,50],
+  ['2',50,150,4,'5/8"(M16)',80,75,75,60,60,60],
+  ['2 1/2',65,180,4,'5/8"(M16)',85,85,80,70,65,65],
+  ['3',80,190,4,'5/8"(M16)',90,85,85,70,70,70],
+  ['4',100,230,8,'5/8"(M16)',90,85,85,70,70,70],
+  ['6',150,280,8,'3/4"(M20)',100,95,95,80,75,75],
+  ['8',200,345,8,'3/4"(M20)',105,105,100,85,85,80],
+  ['10',250,405,12,'7/8"(M22)',110,110,110,90,90,85],
+  ['12',300,485,12,'7/8"(M22)',115,115,110,95,90,90],
+];
+
+const FLANGE_A300 = [
+  ['1/2',15,95,4,'1/2"(M12)',65,60,60,50,50,45],
+  ['3/4',20,115,4,'5/8"(M16)',70,70,70,55,55,50],
+  ['1',25,125,4,'5/8"(M16)',75,75,70,60,55,55],
+  ['1 1/4',32,135,4,'5/8"(M16)',80,75,75,60,60,60],
+  ['1 1/2',40,155,4,'3/4"(M20)',90,90,85,70,65,65],
+  ['2',50,165,8,'5/8"(M16)',85,85,80,70,65,65],
+  ['2 1/2',65,190,8,'3/4"(M20)',100,95,95,80,75,75],
+  ['3',80,210,8,'3/4"(M20)',105,105,100,85,85,80],
+  ['4',100,255,8,'3/4"(M20)',110,110,110,90,90,90],
+  ['6',150,320,12,'3/4"(M20)',120,120,120,100,100,95],
+  ['8',200,380,12,'7/8"(M22)',135,130,130,110,110,110],
+  ['10',250,445,16,'1"(M24)',150,150,150,125,125,125],
+  ['12',300,520,16,'1 1/8"(M27)',165,160,160,135,135,130],
+];
+
+const FLANGE_A600 = [
+  ['1/2',15,95,4,'1/2"(M12)',75,70,60,65,55,50],
+  ['3/4',20,115,4,'5/8"(M16)',85,80,70,70,60,55],
+  ['1',25,125,4,'5/8"(M16)',90,80,75,70,65,60],
+  ['1 1/4',32,135,4,'5/8"(M16)',95,90,80,80,70,65],
+  ['1 1/2',40,155,4,'3/4"(M20)',105,100,90,85,80,70],
+  ['2',50,165,8,'5/8"(M16)',105,100,90,90,80,75],
+  ['2 1/2',65,190,8,'3/4"(M20)',120,110,105,100,90,85],
+  ['3',80,210,8,'3/4"(M20)',125,120,110,105,100,90],
+  ['4',100,275,8,'7/8"(M22)',140,135,125,120,110,105],
+  ['6',150,355,12,'1"(M24)',165,160,150,140,135,125],
+  ['8',200,420,12,'1 1/8"(M27)',185,180,170,160,150,145],
+  ['10',250,510,16,'1 1/4"(M30)',205,195,190,175,170,160],
+  ['12',300,560,20,'1 1/4"(M30)',210,205,195,185,175,170],
+];
+
+const FLANGE_A900 = [
+  ['1/2',15,120,4,'3/4"(M20)',105,100,90,85,80,70],
+  ['3/4',20,130,4,'3/4"(M20)',110,105,100,90,85,80],
+  ['1',25,150,4,'7/8"(M22)',120,115,110,100,95,85],
+  ['1 1/4',32,160,4,'7/8"(M22)',120,115,110,100,95,85],
+  ['1 1/2',40,180,4,'1"(M24)',135,125,120,110,100,95],
+  ['2',50,215,8,'7/8"(M22)',140,135,125,120,110,105],
+  ['2 1/2',65,245,8,'1"(M24)',150,145,140,130,120,115],
+  ['3',80,240,8,'7/8"(M22)',140,135,125,120,110,105],
+  ['4',100,290,8,'1 1/8"(M27)',165,155,150,135,130,125],
+  ['6',150,380,12,'1 1/8"(M27)',185,180,170,160,150,145],
+  ['8',200,470,12,'1 3/8"(M36)',210,205,200,180,175,165],
+  ['10',250,545,16,'1 3/8"(M36)',225,220,210,195,185,180],
+  ['12',300,610,20,'1 3/8"(M36)',245,235,230,210,205,200],
+];
+
+const FLANGE_A1500 = [
+  ['1/2',15,120,4,'3/4"(M20)',105,100,90,85,80,70],
+  ['3/4',20,130,4,'3/4"(M20)',110,105,100,90,85,80],
+  ['1',25,150,4,'7/8"(M22)',120,115,110,100,95,85],
+  ['1 1/4',32,160,4,'7/8"(M22)',120,115,110,100,95,85],
+  ['1 1/2',40,180,4,'1"(M24)',135,125,120,110,100,95],
+  ['2',50,215,8,'7/8"(M22)',140,135,125,120,110,105],
+  ['2 1/2',65,245,8,'1"(M24)',150,145,140,130,120,115],
+  ['3',80,265,8,'1 1/8"(M27)',170,165,155,145,135,130],
+  ['4',100,310,8,'1 1/4"(M30)',185,180,170,155,150,145],
+  ['6',150,395,12,'1 3/8"(M36)',250,245,235,220,210,205],
+  ['8',200,485,12,'1 5/8"(M42)',280,270,265,240,235,225],
+  ['10',250,585,12,'1 7/8"(M48)',330,320,315,280,275,270],
+  ['12',300,675,16,'2"(M52)',365,360,350,315,310,305],
+];
+
+document.getElementById('f5k-tbody').innerHTML = rows(FLANGE_5K);
+document.getElementById('f10k-tbody').innerHTML = rows(FLANGE_10K);
+document.getElementById('f20k-tbody').innerHTML = rows(FLANGE_20K);
+document.getElementById('f30k-tbody').innerHTML = rows(FLANGE_30K);
+document.getElementById('f63k-tbody').innerHTML = rows(FLANGE_63K);
+document.getElementById('fa150-tbody').innerHTML = rows(FLANGE_A150);
+document.getElementById('fa300-tbody').innerHTML = rows(FLANGE_A300);
+document.getElementById('fa600-tbody').innerHTML = rows(FLANGE_A600);
+document.getElementById('fa900-tbody').innerHTML = rows(FLANGE_A900);
+document.getElementById('fa1500-tbody').innerHTML = rows(FLANGE_A1500);
+document.getElementById('fitting-tbody').innerHTML = rows(FITTING);
+document.getElementById('ubolt-tbody').innerHTML = rows(UBOLT);
+document.getElementById('gasket-tbody').innerHTML = rows(GASKET);
+document.getElementById('eyebolt-tbody').innerHTML = rows(EYEBOLT);
+document.getElementById('shackle-tbody').innerHTML = rows(SHACKLE);
+document.getElementById('wire-tbody').innerHTML = rows(WIRE);
+document.getElementById('pump-tbody').innerHTML = rows(PUMP_CLEARANCE);
+document.getElementById('chain-tbody').innerHTML = rows(CHAIN);
+
+// 嵌め合い基準 テーブル描画
+document.getElementById('clearance-tbody').innerHTML = CLEARANCE.map(r =>
+  '<tr>' + r.map((v, i) => `<td>${v}</td>`).join('') + '</tr>'
+).join('');
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// NAVIGATION
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const nav = document.getElementById('nav-'+id);
+  if (nav) {
+    nav.classList.add('active');
+    nav.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  }
+  window.scrollTo(0, 0);
+}
+
+// Tab switcher
+function switchTab(btn, group, tab) {
+  btn.closest('.tab-bar').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // scope to the closest ancestor that contains the panes
+  const container = btn.closest('.tab-pane, .page, .card-body') || document;
+  container.querySelectorAll(`[id^="${group}-tab-"]`).forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(`${group}-tab-${tab}`);
+  if (target) target.classList.add('active');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SEARCH
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const SEARCH_INDEX = [];
+function indexData(section, label, rows, headers) {
+  rows.forEach(r => {
+    SEARCH_INDEX.push({
+      section,
+      label: headers[0] + ':' + r[0] + '  ' + headers[1] + ':' + r[1],
+      data: r,
+      headers
+    });
+  });
+}
+indexData('ステンレス鋼管','',SUS_PIPE,['B','A','OD','S/10','S/20','S/40','S/80']);
+indexData('炭素鋼管','',CS_PIPE,['B','A','OD','SGP','S/20','S/40','S/80']);
+indexData('フランジ5k','',FLANGE_5K,['B','A','外径','ボルト数','F+F','RJ+RJ']);
+indexData('フランジ10k','',FLANGE_10K,['B','A','外径','ボルト数','F+F','RJ+RJ']);
+indexData('フランジ20k','',FLANGE_20K,['B','A','外径','ボルト数','ボルト']);
+indexData('JIS 30k','',FLANGE_30K,['A','外径','ボルト数','ボルト']);
+indexData('JIS 63k','',FLANGE_63K,['A','外径','ボルト数','ボルト']);
+indexData('ANSI 150lb','',FLANGE_A150,['NPS','A','外径','ボルト数','ボルト']);
+indexData('ANSI 300lb','',FLANGE_A300,['NPS','A','外径','ボルト数','ボルト']);
+indexData('ANSI 600lb','',FLANGE_A600,['NPS','A','外径','ボルト数','ボルト']);
+indexData('ANSI 900lb','',FLANGE_A900,['NPS','A','外径','ボルト数','ボルト']);
+indexData('ANSI 1500lb','',FLANGE_A1500,['NPS','A','外径','ボルト数','ボルト']);
+indexData('フィッテング','',FITTING,['B','A','45°','90°','チー','レジューサー']);
+indexData('Uボルト','',UBOLT,['B','A','穴ピッチ']);
+indexData('ガスケット','',GASKET,['B','A','5k外径','5k内径','10k外径','10k内径']);
+indexData('アイボルト','',EYEBOLT,['ねじ','垂直吊り','45°吊り']);
+indexData('シャックル','',SHACKLE,['呼び','tf','kN','口幅','頭径','長さ','穴径','ピン径','ねじ径','重量']);
+indexData('ワイヤー','',WIRE,['直径','呼び','切断荷重','1本吊り','30°','60°']);
+
+function openSearch() {
+  document.getElementById('search-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('search-box').focus(), 100);
+}
+function closeSearchOnBg(e) {
+  if (e.target === document.getElementById('search-overlay')) closeSearch();
+}
+function closeSearch() {
+  document.getElementById('search-overlay').classList.remove('open');
+  document.getElementById('search-box').value = '';
+  document.getElementById('search-results').innerHTML = '';
+}
+function doSearch(q) {
+  const r = document.getElementById('search-results');
+  if (!q.trim()) { r.innerHTML = ''; return; }
+  const kw = q.toLowerCase();
+  const hits = SEARCH_INDEX.filter(item =>
+    item.data.some(v => String(v).toLowerCase().includes(kw)) ||
+    item.section.toLowerCase().includes(kw)
+  ).slice(0, 30);
+
+  if (!hits.length) { r.innerHTML = '<div class="search-item"><span class="s-label">見つかりませんでした</span></div>'; return; }
+
+  r.innerHTML = hits.map((h, i) => {
+    const vals = h.headers.map((hd,j) => `${hd}:${h.data[j]}`).join('　');
+    return `<div class="search-item" onclick="closeSearch()">
+      <div class="s-section">${h.section}</div>
+      <div class="s-label">${vals}</div>
+    </div>`;
+  }).join('');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ボルト・ナット対辺寸法表
+// S, ISO六角, 小形六角, 六角穴付ボルト・ナット, 六角穴付ボルト, 六角穴付止めネジ, ウィット, メートル
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const BOLT_SPAN = [
+  [1.5,'—','—','M1.6・M2','M3','—','—'],
+  [2,'—','—','M2.5','M4','—','—'],
+  [2.5,'—','—','M3','M5','—','—'],
+  [3,'—','—','M4','M6','—','—'],
+  [4,'M2','M2','M5','M8','—','—'],
+  [4.5,'—','(M2.2)','—','—','—','—'],
+  [5,'M2.5','M2.5','M6','M10','—','—'],
+  [5.5,'M3','M3','—','—','—','—'],
+  [6,'—','(M3.5)','M8','M12','W1/8','M3'],
+  [7,'M4','M4','—','—','—','—'],
+  [8,'M5','(M4.5)M5','M10','M16','W3/16','M4'],
+  [9,'—','—','—','—','—','M5'],
+  [10,'M6','M6','M12','M20','W1/4','M6'],
+  [11,'—','(M7)','—','—','—','—'],
+  [12,'—','—','(M14)','M24','—','—'],
+  [13,'M8','M8','—','—','—','—'],
+  [14,'—','—','M16(M18)','—','W5/16','M8'],
+  [15,'—','—','—','—','—','—'],
+  [16,'M10','—','—','—','—','—'],
+  [17,'—','M10','M20(M22)','—','W3/8','M10'],
+  [18,'M12','—','—','—','—','—'],
+  [19,'—','M12','M24(M27)','—','W7/16','—'],
+  [21,'(M14)','—','—','—','W1/2','M12'],
+  [22,'—','(M14)','M12','M30','—','—'],
+  [23,'—','—','—','—','—','M14'],
+  [24,'M16','M16','(M33)','—','—','—'],
+  [26,'—','—','—','—','W5/8','M16'],
+  [27,'—','(M18)','M16','M36(M39)','—','—'],
+  [29,'—','—','—','—','—','M18'],
+  [30,'M20','M20','—','—','—','—'],
+  [32,'—','(M22)','M20','M42(M45)','W3/4','M20'],
+  [35,'—','—','—','—','W7/8','M22'],
+  [36,'M24','M24','M22','M48(M52)','—','—'],
+  [38,'—','—','—','—','—','M24'],
+  [41,'—','(M27)','M24','—','W1','M27'],
+  [46,'M30','M30','M27','—','W1 1/8','M30'],
+  [50,'—','(M33)','M30','—','W1 1/4','M33'],
+  [54,'—','—','—','—','W1 3/8','M36'],
+  [55,'M36','M36','—','—','—','—'],
+  [58,'—','—','—','—','W1 1/2','M39'],
+  [60,'—','(M39)','—','—','—','—'],
+  [63,'—','—','—','—','W1 5/8','M42'],
+  [65,'—','M42','—','—','—','—'],
+  [67,'—','—','—','—','W1 3/4','M45'],
+  [70,'—','(M45)','—','—','—','—'],
+  [71,'—','—','—','—','W1 7/8','M48'],
+  [75,'—','M48','—','—','—','—'],
+  [77,'—','—','—','—','W2','M52'],
+  [80,'—','(M52)','—','—','—','—'],
+  [85,'—','M56','—','—','W2 1/4','—'],
+  [90,'—','(M60)','—','—','—','—'],
+  [95,'—','M64','—','—','W2 1/2','—'],
+  [100,'—','(M68)','—','—','—','—'],
+  [105,'—','M72','—','—','—','—'],
+  [110,'—','(M76)','—','—','W3','—'],
+  [115,'—','M80','—','—','—','—'],
+  [120,'—','M85','—','—','W3 1/4','—'],
+];
+
+// 化学成分表
+// 名称, JIS, C, Si, Mn, P, S, Cu, Ni, Cr, Mo, V
+const BOLT_CHEM = [
+  ['S45C','G4051','0.42〜0.48','0.15〜0.35','0.60〜0.90','0.03以下','0.035以下','—','—','—','—','—'],
+  ['S50C','G4051','0.47〜0.53','♦','♦','♦','♦','—','—','—','—','—'],
+  ['S55C','G4051','0.52〜0.58','♦','♦','♦','♦','—','—','—','—','—'],
+  ['SCrV','—','0.38〜0.43','0.20〜0.35','♦','♦','0.03以下','0.30以下','0.20以下','0.50〜0.70','—','0.07〜0.15'],
+  ['SCrV','—','0.65〜0.75','0.15〜0.35','♦','♦','♦','0.15以下','0.15以下','0.15以下','—','0.10〜0.20'],
+  ['SUS420J2','G4303','0.26〜0.40','1.00以下','1.00以下','0.04以下','♦','—','0.60以下','12.00〜14.00','—','—'],
+  ['SCM435','G4105','0.33〜0.38','0.15〜0.35','0.60〜0.85','♦','♦','—','—','0.90〜1.20','0.15〜0.30','—'],
+  ['SCM440','G4105','0.38〜0.43','♦','♦','♦','♦','—','—','♦','♦','—'],
+  ['SK5','G4401','0.80〜0.90','0.35以下','0.50以下','♦','♦','—','—','—','—','—'],
+  ['DSR1K6','—','0.55〜0.65','1.00以下','1.00以下','0.03以下','0.015以下','—','12.50〜13.50','0.10〜0.20','0.10〜0.20','—'],
+];
+
+document.getElementById('bolt-span-tbody').innerHTML = rows(BOLT_SPAN);
+document.getElementById('bolt-chem-tbody').innerHTML = rows(BOLT_CHEM);
+indexData('ボルト・ナット対辺','',BOLT_SPAN,['S','六角ISO','小形六角','六角穴付ボルト・ナット','六角穴付ボルト','六角穴付止めネジ','ウィット','メートル']);
+</script>
+<script>
+// PWA installed
+}
+</script>
+</body>
+</html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
