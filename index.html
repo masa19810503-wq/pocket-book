@@ -288,6 +288,9 @@
   <div class="nav-item" onclick="showPage('tap')" id="nav-tap">
     <span class="icon">🔧</span><span>タップ</span>
   </div>
+  <div class="nav-item" onclick="showPage('wrench')" id="nav-wrench">
+    <span class="icon">🪛</span><span>レンチ</span>
+  </div>
 </nav>
 
 <!-- Main -->
@@ -348,6 +351,11 @@
         <span class="sc-icon">🔧</span>
         <span class="sc-title">タップ下穴</span>
         <span class="sc-sub">M・UNC・UNF・W・管用</span>
+      </div>
+      <div class="section-card" onclick="showPage('wrench')">
+        <span class="sc-icon">🪛</span>
+        <span class="sc-title">パイプレンチ</span>
+        <span class="sc-sub">寸法・適用管外径</span>
       </div>
     </div>
   </div>
@@ -1363,6 +1371,33 @@
     </div>
   </div>
 
+  <!-- ━━ パイプレンチ ━━ -->
+  <div class="page" id="page-wrench">
+    <div class="page-title">🪛 パイプレンチ仕様表</div>
+    <div class="content-card">
+      <div class="card-header">パイプレンチ　寸法・適用管外径</div>
+      <div class="card-body">
+        <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">①くわえ口寸法　②全長　③頭部高さ　④スピンドル径</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>重量</th>
+                <th>①<br>くわえ口</th>
+                <th>②<br>全長</th>
+                <th>③<br>頭部高さ</th>
+                <th>④<br>スピンドル</th>
+                <th>適用管外径（A呼称）</th>
+              </tr>
+            </thead>
+            <tbody id="wrench-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ━━ タップ下穴 ━━ -->
   <div class="page" id="page-tap">
     <div class="page-title">🔧 タップ下穴寸法表</div>
@@ -2289,6 +2324,23 @@ const BOLT_TORQUE = [
 ];
 document.getElementById('bolt-torque-tbody').innerHTML = rows(BOLT_TORQUE);
 indexData('締付トルク（鋼製ボルト）','',BOLT_TORQUE,['呼び','4.6','6.8','8.8','10.9','12.9']);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// パイプレンチ [品番, 重量, ①くわえ口, ②全長, ③頭部高さ, ④スピンドル, 適用管外径]
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const PIPE_WRENCH = [
+  ['PW150',  '220g',   '80mm',  '140mm',  '24mm', '12mm', '6～27mm（20A）'],
+  ['PW200',  '360g',   '100mm', '160mm',  '29mm', '15mm', '6～34mm（25A）'],
+  ['PW250',  '630g',   '125mm', '200mm',  '35mm', '18mm', '6～43mm（32A）'],
+  ['PW300',  '1030g',  '145mm', '240mm',  '40mm', '20mm', '6～49mm（40A）'],
+  ['PW350',  '1430g',  '163mm', '290mm',  '44mm', '22mm', '10～61mm（50A）'],
+  ['PW450',  '2330g',  '192mm', '369mm',  '53mm', '25mm', '15～76mm（65A）'],
+  ['PW600',  '3580g',  '222mm', '494mm',  '64mm', '30mm', '20～89mm（80A）'],
+  ['PW900',  '6600g',  '290mm', '750mm',  '78mm', '35mm', '25～114mm（100A）'],
+  ['PW1200', '10700g', '365mm', '1000mm', '98mm', '41mm', '50～140mm（125A）'],
+];
+document.getElementById('wrench-tbody').innerHTML = rows(PIPE_WRENCH);
+indexData('パイプレンチ','',PIPE_WRENCH,['品番','重量','①くわえ口','②全長','③頭部高さ','④スピンドル','適用管外径']);
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // タップ下穴寸法表
