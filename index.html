@@ -158,13 +158,25 @@
     white-space: nowrap;
     box-shadow: 0 2px 4px rgba(0,0,0,.08);
   }
+  th:first-child {
+    position: sticky; top: 0; left: 0; z-index: 3;
+    box-shadow: 2px 2px 4px rgba(0,0,0,.1);
+  }
   td {
     font-size: 12px; padding: 7px 10px;
     text-align: center; border: 1px solid #e2e8f0;
     white-space: nowrap;
   }
+  td:first-child {
+    position: sticky; left: 0; z-index: 1;
+    background: #eef3fb;
+    font-weight: 600;
+    box-shadow: 2px 0 4px rgba(0,0,0,.06);
+  }
   tr:nth-child(even) td { background: #f4f7fc; }
+  tr:nth-child(even) td:first-child { background: #e8eef8; }
   tr:hover td { background: #e8f0fb; }
+  tr:hover td:first-child { background: #dce8f7; }
 
   /* ── Info items ── */
   .info-item {
