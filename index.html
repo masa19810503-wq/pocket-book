@@ -291,6 +291,9 @@
   <div class="nav-item" onclick="showPage('wrench')" id="nav-wrench">
     <span class="icon">🪛</span><span>レンチ</span>
   </div>
+  <div class="nav-item" onclick="showPage('key')" id="nav-key">
+    <span class="icon">🔑</span><span>キー</span>
+  </div>
 </nav>
 
 <!-- Main -->
@@ -356,6 +359,11 @@
         <span class="sc-icon">🪛</span>
         <span class="sc-title">パイプレンチ</span>
         <span class="sc-sub">寸法・適用管外径</span>
+      </div>
+      <div class="section-card" onclick="showPage('key')">
+        <span class="sc-icon">🔑</span>
+        <span class="sc-title">キー</span>
+        <span class="sc-sub">平行キー・こう配キー</span>
       </div>
     </div>
   </div>
@@ -1398,6 +1406,131 @@
     </div>
   </div>
 
+  <!-- ━━ キー ━━ -->
+  <div class="page" id="page-key">
+    <div class="page-title">🔑 キー寸法表</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'key','np')">新JIS 平行キー</button>
+      <button class="tab-btn" onclick="switchTab(this,'key','qp')">旧JIS 平行キー</button>
+      <button class="tab-btn" onclick="switchTab(this,'key','nt')">新JIS こう配キー</button>
+      <button class="tab-btn" onclick="switchTab(this,'key','qt')">旧JIS こう配キー</button>
+    </div>
+
+    <!-- 新JIS 平行キー -->
+    <div class="tab-pane active" id="key-tab-np">
+      <div class="content-card">
+        <div class="card-header">新JIS 平行キー　JIS B 1301-1996　単位：mm</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th rowspan="2">d<br>超え</th>
+                  <th rowspan="2">d<br>以下</th>
+                  <th colspan="2">キー溝 b</th>
+                  <th colspan="2">t</th>
+                  <th rowspan="2">呼び<br>b×h</th>
+                  <th rowspan="2">押しねじ<br>M</th>
+                </tr>
+                <tr>
+                  <th>基準</th><th>許容差<br>(JS9)</th>
+                  <th>基準</th><th>許容差</th>
+                </tr>
+              </thead>
+              <tbody id="key-np-tbody"></tbody>
+            </table>
+          </div>
+          <p style="font-size:10px;color:var(--muted);margin-top:6px;">※プーリーの種類により押しねじのサイズが異なる場合があります。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 旧JIS 平行キー -->
+    <div class="tab-pane" id="key-tab-qp">
+      <div class="content-card">
+        <div class="card-header">旧JIS 平行キー　JIS B 1301-1959　単位：mm</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th rowspan="2">d<br>超え</th>
+                  <th rowspan="2">d<br>以下</th>
+                  <th colspan="2">キー溝 b</th>
+                  <th colspan="2">t</th>
+                  <th rowspan="2">呼び<br>b×h</th>
+                  <th rowspan="2">押しねじ<br>M</th>
+                </tr>
+                <tr>
+                  <th>基準</th><th>許容差<br>(F7)</th>
+                  <th>基準</th><th>許容差</th>
+                </tr>
+              </thead>
+              <tbody id="key-qp-tbody"></tbody>
+            </table>
+          </div>
+          <p style="font-size:10px;color:var(--muted);margin-top:6px;">※プーリーの種類により押しねじのサイズが異なる場合があります。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 新JIS こう配キー -->
+    <div class="tab-pane" id="key-tab-nt">
+      <div class="content-card">
+        <div class="card-header">新JIS こう配キー　JIS B 1301-1996　単位：mm</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th rowspan="2">d*<br>超え</th>
+                  <th rowspan="2">d*<br>以下</th>
+                  <th colspan="2">キー溝 b</th>
+                  <th colspan="2">t</th>
+                  <th rowspan="2">呼び<br>b×h</th>
+                </tr>
+                <tr>
+                  <th>基準</th><th>許容差<br>(D10)</th>
+                  <th>基準</th><th>許容差</th>
+                </tr>
+              </thead>
+              <tbody id="key-nt-tbody"></tbody>
+            </table>
+          </div>
+          <p style="font-size:10px;color:var(--muted);margin-top:6px;">*標準軸穴径はφ12以上で少数点を含まない値です。キー溝のこう配は1/100です。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 旧JIS こう配キー -->
+    <div class="tab-pane" id="key-tab-qt">
+      <div class="content-card">
+        <div class="card-header">旧JIS こう配キー　JIS B 1301-1959　単位：mm</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th rowspan="2">d*<br>超え</th>
+                  <th rowspan="2">d*<br>以下</th>
+                  <th colspan="2">キー溝 b</th>
+                  <th colspan="2">t</th>
+                  <th rowspan="2">呼び<br>b×h</th>
+                </tr>
+                <tr>
+                  <th>基準</th><th>許容差<br>(D10)</th>
+                  <th>基準</th><th>許容差</th>
+                </tr>
+              </thead>
+              <tbody id="key-qt-tbody"></tbody>
+            </table>
+          </div>
+          <p style="font-size:10px;color:var(--muted);margin-top:6px;">*標準軸穴径はφ12以上で少数点を含まない値です。キー溝のこう配は1/100です。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ━━ タップ下穴 ━━ -->
   <div class="page" id="page-tap">
     <div class="page-title">🔧 タップ下穴寸法表</div>
@@ -2341,6 +2474,89 @@ const PIPE_WRENCH = [
 ];
 document.getElementById('wrench-tbody').innerHTML = rows(PIPE_WRENCH);
 indexData('パイプレンチ','',PIPE_WRENCH,['品番','重量','①くわえ口','②全長','③頭部高さ','④スピンドル','適用管外径']);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// キー寸法表 [d超え, d以下, b基準, b許容差, t基準, t許容差, 呼び, 押しねじ]
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// 新JIS 平行キー (JIS B 1301-1996)
+const KEY_NP = [
+  ['—',  10,  3,  '±0.0125', 1.4, '+0.1/0', '3×3',  'M6'],
+  [10,   12,  4,  '±0.0150', 1.8, '+0.1/0', '4×4',  'M6'],
+  [12,   17,  5,  '±0.0150', 2.3, '+0.1/0', '5×5',  'M6'],
+  [17,   22,  6,  '±0.0150', 2.8, '+0.1/0', '6×6',  'M6'],
+  [22,   30,  8,  '±0.0180', 3.3, '+0.1/0', '8×7',  'M8'],
+  [30,   38,  10, '±0.0180', 3.3, '+0.2/0', '10×8', 'M8'],
+  [38,   44,  12, '±0.0215', 3.3, '+0.2/0', '12×8', 'M8'],
+  [44,   50,  14, '±0.0215', 3.8, '+0.2/0', '14×9', 'M10'],
+  [50,   58,  16, '±0.0215', 4.3, '+0.2/0', '16×10','M10'],
+  [58,   65,  18, '±0.0215', 4.4, '+0.2/0', '18×11','M12'],
+  [65,   75,  20, '±0.0260', 4.9, '+0.2/0', '20×12','M12'],
+  [75,   85,  22, '±0.0260', 5.4, '+0.2/0', '22×14','M12'],
+  [85,   95,  25, '±0.0260', 5.4, '+0.2/0', '25×14','M12'],
+  [95,   110, 28, '±0.0260', 6.4, '+0.2/0', '28×16','M12'],
+  [110,  130, 32, '±0.0260', 7.4, '+0.2/0', '32×18','M12'],
+];
+
+// 旧JIS 平行キー (JIS B 1301-1959)
+const KEY_QP = [
+  ['—',  10,  4,  '+0.022/+0.010', 1.5, '+0.1/0', '4×4',  'M6'],
+  [10,   13,  4,  '+0.022/+0.010', 1.5, '+0.1/0', '4×4',  'M6'],
+  [13,   20,  5,  '+0.022/+0.010', 2,   '+0.1/0', '5×5',  'M6'],
+  [20,   30,  7,  '+0.028/+0.013', 3,   '+0.1/0', '7×7',  'M8'],
+  [30,   40,  10, '+0.028/+0.013', 3.5, '+0.1/0', '10×8', 'M8'],
+  [40,   50,  12, '+0.034/+0.016', 3.5, '+0.1/0', '12×8', 'M10'],
+  [50,   60,  15, '+0.034/+0.016', 5,   '+0.1/0', '15×10','M10'],
+  [60,   70,  18, '+0.034/+0.016', 6,   '+0.1/0', '18×12','M12'],
+  [70,   80,  20, '+0.041/+0.020', 6,   '+0.1/0', '20×13','M12'],
+  [80,   95,  24, '+0.041/+0.020', 8,   '+0.1/0', '24×16','M12'],
+  [95,   110, 28, '+0.041/+0.020', 9,   '+0.1/0', '28×18','M12'],
+  [110,  125, 32, '+0.050/+0.025', 10,  '+0.1/0', '32×20','M12'],
+  [125,  140, 35, '+0.050/+0.025', 11,  '+0.1/0', '35×22','M12'],
+];
+
+// 新JIS こう配キー (JIS B 1301-1996)  [d超え, d以下, b基準, b許容差, t基準, t許容差, 呼び]
+const KEY_NT = [
+  ['—', 12,  4,  '+0.078/+0.040', 1.2, '+0.1/0', '4×4'],
+  [12,  17,  5,  '+0.078/+0.040', 1.7, '+0.1/0', '5×5'],
+  [17,  22,  6,  '+0.078/+0.030', 2.2, '+0.1/0', '6×6'],
+  [22,  30,  8,  '+0.098/+0.040', 2.4, '+0.2/0', '8×7'],
+  [30,  38,  10, '+0.098/+0.040', 2.4, '+0.2/0', '10×8'],
+  [38,  44,  12, '+0.120/+0.050', 2.4, '+0.2/0', '12×8'],
+  [44,  50,  14, '+0.120/+0.050', 2.9, '+0.2/0', '14×9'],
+  [50,  58,  16, '+0.120/+0.050', 3.4, '+0.2/0', '16×10'],
+  [58,  65,  18, '+0.120/+0.050', 3.4, '+0.2/0', '18×11'],
+  [65,  75,  20, '+0.149/+0.065', 3.9, '+0.2/0', '20×12'],
+  [75,  85,  22, '+0.149/+0.065', 4.4, '+0.2/0', '22×14'],
+  [85,  95,  25, '+0.149/+0.065', 4.4, '+0.2/0', '25×14'],
+  [95,  110, 28, '+0.149/+0.065', 5.4, '+0.2/0', '28×16'],
+  [110, 130, 32, '+0.180/+0.080', 6.4, '+0.2/0', '32×18'],
+];
+
+// 旧JIS こう配キー (JIS B 1301-1959)
+const KEY_QT = [
+  ['—', 13,  4,  '+0.078/+0.040', 1.5, '+0.1/0',  '4×4'],
+  [13,  20,  5,  '+0.078/+0.040', 2,   '+0.1/0',  '5×5'],
+  [20,  30,  7,  '+0.098/+0.040', 3,   '+0.1/0',  '7×7'],
+  [30,  40,  10, '+0.098/+0.040', 3.5, '+0.1/0',  '10×8'],
+  [40,  50,  12, '+0.120/+0.050', 3.5, '+0.1/0',  '12×8'],
+  [50,  60,  15, '+0.120/+0.050', 5,   '+0.1/0',  '15×10'],
+  [60,  70,  18, '+0.120/+0.050', 6,   '+0.1/0',  '18×12'],
+  [70,  80,  20, '+0.149/+0.065', 6,   '+0.1/0',  '20×13'],
+  [80,  95,  24, '+0.149/+0.065', 8,   '+0.1/0',  '24×16'],
+  [95,  110, 28, '+0.149/+0.065', 9,   '+0.1/0',  '28×18'],
+  [110, 125, 32, '+0.180/+0.080', 10,  '+0.1/0',  '32×20'],
+  [125, 140, 35, '+0.180/+0.060', 11,  '+0.15/0', '35×22'],
+];
+
+document.getElementById('key-np-tbody').innerHTML = rows(KEY_NP);
+document.getElementById('key-qp-tbody').innerHTML = rows(KEY_QP);
+document.getElementById('key-nt-tbody').innerHTML = rows(KEY_NT);
+document.getElementById('key-qt-tbody').innerHTML = rows(KEY_QT);
+indexData('新JIS平行キー','',KEY_NP,['d超え','d以下','b基準','b許容差','t基準','t許容差','呼び','押しねじ']);
+indexData('旧JIS平行キー','',KEY_QP,['d超え','d以下','b基準','b許容差','t基準','t許容差','呼び','押しねじ']);
+indexData('新JISこう配キー','',KEY_NT,['d超え','d以下','b基準','b許容差','t基準','t許容差','呼び']);
+indexData('旧JISこう配キー','',KEY_QT,['d超え','d以下','b基準','b許容差','t基準','t許容差','呼び']);
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // タップ下穴寸法表
