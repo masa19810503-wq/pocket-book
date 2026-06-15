@@ -178,6 +178,22 @@
   tr:hover td { background: #e8f0fb; }
   tr:hover td:first-child { background: #dce8f7; }
 
+  /* 2列固定（キー表用） */
+  .tbl-2col td:first-child,
+  .tbl-2col th:first-child { width: 42px; min-width: 42px; }
+  .tbl-2col td:nth-child(2) {
+    position: sticky; left: 42px; z-index: 1;
+    background: #eef3fb; font-weight: 600;
+    box-shadow: 2px 0 4px rgba(0,0,0,.06);
+  }
+  .tbl-2col th:nth-child(2) {
+    position: sticky; left: 42px; z-index: 3;
+    background: #dce6f4;
+    box-shadow: 2px 2px 4px rgba(0,0,0,.1);
+  }
+  .tbl-2col tr:nth-child(even) td:nth-child(2) { background: #e8eef8; }
+  .tbl-2col tr:hover td:nth-child(2) { background: #dce8f7; }
+
   /* ── Info items ── */
   .info-item {
     display: flex; align-items: flex-start; gap: 10px;
@@ -1421,7 +1437,7 @@
       <div class="content-card">
         <div class="card-header">新JIS 平行キー　JIS B 1301-1996　単位：mm</div>
         <div class="card-body">
-          <div class="tbl-wrap">
+          <div class="tbl-wrap tbl-2col">
             <table>
               <thead>
                 <tr>
@@ -1450,7 +1466,7 @@
       <div class="content-card">
         <div class="card-header">旧JIS 平行キー　JIS B 1301-1959　単位：mm</div>
         <div class="card-body">
-          <div class="tbl-wrap">
+          <div class="tbl-wrap tbl-2col">
             <table>
               <thead>
                 <tr>
