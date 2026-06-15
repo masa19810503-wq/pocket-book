@@ -310,6 +310,9 @@
   <div class="nav-item" onclick="showPage('key')" id="nav-key">
     <span class="icon">🔑</span><span>キー</span>
   </div>
+  <div class="nav-item" onclick="showPage('conv')" id="nav-conv">
+    <span class="icon">📐</span><span>換算</span>
+  </div>
 </nav>
 
 <!-- Main -->
@@ -380,6 +383,11 @@
         <span class="sc-icon">🔑</span>
         <span class="sc-title">キー</span>
         <span class="sc-sub">平行キー・こう配キー</span>
+      </div>
+      <div class="section-card" onclick="showPage('conv')">
+        <span class="sc-icon">📐</span>
+        <span class="sc-title">単位換算</span>
+        <span class="sc-sub">長さ・重さ など</span>
       </div>
     </div>
   </div>
@@ -1547,6 +1555,108 @@
     </div>
   </div>
 
+  <!-- ━━ 単位換算 ━━ -->
+  <div class="page" id="page-conv">
+    <div class="page-title">📐 単位換算表</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'conv','length')">長さ</button>
+      <button class="tab-btn" onclick="switchTab(this,'conv','weight')">重さ</button>
+      <button class="tab-btn" onclick="switchTab(this,'conv','area')">面積</button>
+      <button class="tab-btn" onclick="switchTab(this,'conv','pressure')">圧力</button>
+    </div>
+
+    <!-- 長さ -->
+    <div class="tab-pane active" id="conv-tab-length">
+      <div class="content-card">
+        <div class="card-header">長さ換算表</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">各行の基準単位を1としたときの換算値</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>基準</th>
+                  <th>mm</th>
+                  <th>インチ<br>(in)</th>
+                  <th>フィート<br>(ft)</th>
+                  <th>ヤード<br>(yd)</th>
+                  <th>マイル<br>(mile)</th>
+                  <th>尺</th>
+                  <th>間</th>
+                  <th>里</th>
+                </tr>
+              </thead>
+              <tbody id="conv-length-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 重さ -->
+    <div class="tab-pane" id="conv-tab-weight">
+      <div class="content-card">
+        <div class="card-header">重さ換算表</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">各行の基準単位を1としたときの換算値</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>基準</th><th>kg</th><th>g</th><th>t</th>
+                  <th>lb<br>(ポンド)</th><th>oz<br>(オンス)</th><th>貫</th><th>匁</th>
+                </tr>
+              </thead>
+              <tbody id="conv-weight-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 面積 -->
+    <div class="tab-pane" id="conv-tab-area">
+      <div class="content-card">
+        <div class="card-header">面積換算表</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">各行の基準単位を1としたときの換算値</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>基準</th><th>mm²</th><th>cm²</th><th>m²</th>
+                  <th>in²</th><th>ft²</th><th>坪</th><th>a<br>(アール)</th><th>ha<br>(ヘクタール)</th>
+                </tr>
+              </thead>
+              <tbody id="conv-area-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 圧力 -->
+    <div class="tab-pane" id="conv-tab-pressure">
+      <div class="content-card">
+        <div class="card-header">圧力換算表</div>
+        <div class="card-body">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">各行の基準単位を1としたときの換算値</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>基準</th><th>MPa</th><th>kPa</th><th>Pa</th>
+                  <th>kgf/cm²</th><th>bar</th><th>psi</th><th>mmHg</th><th>atm</th>
+                </tr>
+              </thead>
+              <tbody id="conv-pressure-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ━━ タップ下穴 ━━ -->
   <div class="page" id="page-tap">
     <div class="page-title">🔧 タップ下穴寸法表</div>
@@ -2573,6 +2683,65 @@ indexData('新JIS平行キー','',KEY_NP,['d超え','d以下','b基準','b許容
 indexData('旧JIS平行キー','',KEY_QP,['d超え','d以下','b基準','b許容差','t基準','t許容差','呼び','押しねじ']);
 indexData('新JISこう配キー','',KEY_NT,['d超え','d以下','b基準','b許容差','t基準','t許容差','呼び']);
 indexData('旧JISこう配キー','',KEY_QT,['d超え','d以下','b基準','b許容差','t基準','t許容差','呼び']);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 単位換算表
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// 長さ [基準, mm, in, ft, yd, mile, 尺, 間, 里]
+const CONV_LENGTH = [
+  ['1m',    '1,000',      '39.3701',   '3.28084',    '1.09361',  '0.000621', '3.3',      '0.55',     '0.000254'],
+  ['1in',   '25.4',       '1',         '0.083333',   '0.027777', '0.000015', '0.083818', '0.013969', '0.000006'],
+  ['1ft',   '304.8',      '12',        '1',          '0.333333', '0.000189', '1.00582',  '0.167637', '0.000077'],
+  ['1yd',   '914.4',      '36',        '3',          '1',        '0.000568', '3.01746',  '0.50291',  '0.000232'],
+  ['1mile', '1,609,340',  '63,360',    '5,280',      '1,760',    '1',        '5,310.83', '885.123',  '0.409779'],
+  ['1尺',   '303.03',     '11.9305',   '0.9941939',  '0.331403', '0.000188', '1',        '0.166666', '0.000077'],
+  ['1間',   '1,818.18',   '71.5832',   '5.965163',   '1.98842',  '0.001129', '6',        '1',        '0.000462'],
+  ['1里',   '3,927,270',  '154,619',   '12,884.753', '4,294.99', '2.44033',  '12,960',   '2,160',    '1'],
+];
+document.getElementById('conv-length-tbody').innerHTML = rows(CONV_LENGTH);
+indexData('長さ換算','',CONV_LENGTH,['基準','mm','インチ','フィート','ヤード','マイル','尺','間','里']);
+
+// 重さ [基準, kg, g, t, lb, oz, 貫, 匁]
+const CONV_WEIGHT = [
+  ['1kg',  '1',         '1,000',       '0.001',        '2.20462',  '35.274',   '0.26667',  '266.667'],
+  ['1g',   '0.001',     '1',           '0.000001',     '0.002205', '0.035274', '0.000267', '0.26667'],
+  ['1t',   '1,000',     '1,000,000',   '1',            '2,204.62', '35,274',   '266.667',  '266,667'],
+  ['1lb',  '0.453592',  '453.592',     '0.000454',     '1',        '16',       '0.120959', '120.959'],
+  ['1oz',  '0.028350',  '28.3495',     '0.0000284',    '0.0625',   '1',        '0.007560', '7.5598'],
+  ['1貫',  '3.75',      '3,750',       '0.00375',      '8.26733',  '132.277',  '1',        '1,000'],
+  ['1匁',  '0.00375',   '3.75',        '0.00000375',   '0.008267', '0.132277', '0.001',    '1'],
+];
+document.getElementById('conv-weight-tbody').innerHTML = rows(CONV_WEIGHT);
+indexData('重さ換算','',CONV_WEIGHT,['基準','kg','g','t','lb','oz','貫','匁']);
+
+// 面積 [基準, mm², cm², m², in², ft², 坪, a, ha]
+const CONV_AREA = [
+  ['1mm²',  '1',           '0.01',       '0.000001',    '0.00155',   '0.0000108',  '3.025e-7',   '1e-8',      '1e-10'],
+  ['1cm²',  '100',         '1',          '0.0001',      '0.155',     '0.001076',   '0.0000303',  '0.000001',  '1e-8'],
+  ['1m²',   '1,000,000',   '10,000',     '1',           '1,550.00',  '10.7639',    '0.3025',     '0.01',      '0.0001'],
+  ['1in²',  '645.16',      '6.4516',     '0.000645',    '1',         '0.006944',   '0.000195',   '6.45e-6',   '6.45e-8'],
+  ['1ft²',  '92,903',      '929.03',     '0.0929',      '144',       '1',          '0.028111',   '0.000929',  '9.29e-6'],
+  ['1坪',   '3,305,785',   '33,057.85',  '3.30579',     '5,120.1',   '35.5843',    '1',          '0.033058',  '0.000331'],
+  ['1a',    '100,000,000', '1,000,000',  '100',         '155,000',   '1,076.39',   '30.25',      '1',         '0.01'],
+  ['1ha',   '1e10',        '1e8',        '10,000',      '1.55e7',    '107,639',    '3,025',      '100',       '1'],
+];
+document.getElementById('conv-area-tbody').innerHTML = rows(CONV_AREA);
+indexData('面積換算','',CONV_AREA,['基準','mm²','cm²','m²','in²','ft²','坪','a','ha']);
+
+// 圧力 [基準, MPa, kPa, Pa, kgf/cm², bar, psi, mmHg, atm]
+const CONV_PRESSURE = [
+  ['1MPa',      '1',        '1,000',    '1,000,000', '10.1972',  '10',       '145.038',  '7,500.62', '9.8692'],
+  ['1kPa',      '0.001',    '1',        '1,000',     '0.010197', '0.01',     '0.145038', '7.50062',  '0.009869'],
+  ['1Pa',       '0.000001', '0.001',    '1',         '0.0000102','0.00001',  '0.000145', '0.0075006','0.0000099'],
+  ['1kgf/cm²',  '0.098067', '98.0665',  '98,066.5',  '1',        '0.980665', '14.2233',  '735.56',   '0.967841'],
+  ['1bar',      '0.1',      '100',      '100,000',   '1.01972',  '1',        '14.5038',  '750.062',  '0.986923'],
+  ['1psi',      '0.006895', '6.89476',  '6,894.76',  '0.070307', '0.068948', '1',        '51.7149',  '0.068046'],
+  ['1mmHg',     '0.000133', '0.133322', '133.322',   '0.001360', '0.001333', '0.019337', '1',        '0.001316'],
+  ['1atm',      '0.101325', '101.325',  '101,325',   '1.03323',  '1.01325',  '14.6959',  '760',      '1'],
+];
+document.getElementById('conv-pressure-tbody').innerHTML = rows(CONV_PRESSURE);
+indexData('圧力換算','',CONV_PRESSURE,['基準','MPa','kPa','Pa','kgf/cm²','bar','psi','mmHg','atm']);
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // タップ下穴寸法表
