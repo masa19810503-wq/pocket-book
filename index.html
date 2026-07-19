@@ -2449,8 +2449,6 @@ const CS_WEIGHT = [
 ];
 document.getElementById('sus-weight-tbody').innerHTML = rows(SUS_WEIGHT);
 document.getElementById('cs-weight-tbody').innerHTML = rows(CS_WEIGHT);
-indexData('SUS鋼管重量','',SUS_WEIGHT,['B','A','OD','S/10','S/20','S/40','S/80']);
-indexData('炭素鋼管重量','',CS_WEIGHT,['B','A','OD','SGP','S/20','S/40','S/80']);
 // JIS 5K/10K [A,OD,N,bolt, SBN-FF,SBN-RF,SBN-MF, MBN-FF,MBN-RF,MBN-MF] G=4.5mm 修正済
 const FLANGE_5K = [
   [10,75,4,'M10',45,50,50,35,40,35],
@@ -2690,6 +2688,8 @@ function indexData(section, label, rows, headers) {
 }
 indexData('ステンレス鋼管','',SUS_PIPE,['B','A','OD','S/10','S/20','S/40','S/80']);
 indexData('炭素鋼管','',CS_PIPE,['B','A','OD','SGP','S/20','S/40','S/80']);
+indexData('SUS鋼管重量','',SUS_WEIGHT,['B','A','OD','S/10','S/20','S/40','S/80']);
+indexData('炭素鋼管重量','',CS_WEIGHT,['B','A','OD','SGP','S/20','S/40','S/80']);
 indexData('フランジ5k','',FLANGE_5K,['B','A','外径','ボルト数','F+F','RJ+RJ']);
 indexData('フランジ10k','',FLANGE_10K,['B','A','外径','ボルト数','F+F','RJ+RJ']);
 indexData('フランジ20k','',FLANGE_20K,['B','A','外径','ボルト数','ボルト']);
