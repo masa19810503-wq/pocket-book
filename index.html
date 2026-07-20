@@ -316,6 +316,9 @@
   <div class="nav-item" onclick="showPage('cmp')" id="nav-cmp">
     <span class="icon">💧</span><span>ＣＭＰ</span>
   </div>
+  <div class="nav-item" onclick="showPage('brg')" id="nav-brg">
+    <span class="icon">⭕</span><span>ＢＲＧ</span>
+  </div>
 </nav>
 
 <!-- Main -->
@@ -396,6 +399,11 @@
         <span class="sc-icon">💧</span>
         <span class="sc-title">テイコク ＣＭＰ</span>
         <span class="sc-sub">インペラ・遊び・g調整値</span>
+      </div>
+      <div class="section-card" onclick="showPage('brg')">
+        <span class="sc-icon">⭕</span>
+        <span class="sc-title">ベアリング</span>
+        <span class="sc-sub">すき間等級・精度等級</span>
       </div>
     </div>
   </div>
@@ -1877,6 +1885,86 @@
     </div>
   </div>
 
+  <!-- ━━ ベアリング ━━ -->
+  <div class="page" id="page-brg">
+    <div class="page-title">⭕ ベアリング等級表</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'brg','clearance')">すき間等級</button>
+      <button class="tab-btn" onclick="switchTab(this,'brg','precision')">精度等級</button>
+      <button class="tab-btn" onclick="switchTab(this,'brg','seal')">シール記号</button>
+    </div>
+
+    <!-- すき間等級 -->
+    <div class="tab-pane active" id="brg-tab-clearance">
+      <div class="content-card">
+        <div class="card-header">すき間等級（ラジアル内部すき間）</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>等級</th>
+                  <th>すき間の大きさ</th>
+                  <th>特徴</th>
+                  <th>主な用途</th>
+                </tr>
+              </thead>
+              <tbody id="brg-clearance-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 精度等級 -->
+    <div class="tab-pane" id="brg-tab-precision">
+      <div class="content-card">
+        <div class="card-header">精度等級（寸法・回転精度）</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>等級</th>
+                  <th>特徴</th>
+                  <th>主な用途</th>
+                </tr>
+              </thead>
+              <tbody id="brg-precision-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- シール記号 -->
+    <div class="tab-pane" id="brg-tab-seal">
+      <div class="content-card">
+        <div class="card-header">シールド形・シール形　記号一覧</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table id="brg-seal-table">
+              <thead>
+                <tr>
+                  <th rowspan="2">区分</th>
+                  <th rowspan="2">項目</th>
+                  <th>シールド形</th>
+                  <th colspan="3">シール形</th>
+                </tr>
+                <tr>
+                  <th>非接触式</th>
+                  <th>非接触式</th>
+                  <th>接触式</th>
+                  <th>低トルク形</th>
+                </tr>
+              </thead>
+              <tbody id="brg-seal-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ━━ タップ下穴 ━━ -->
   <div class="page" id="page-tap">
     <div class="page-title">🔧 タップ下穴寸法表</div>
@@ -3013,6 +3101,67 @@ indexData('CMPインペラ区分','',CMP_IMPELLER,['区分','呼び径mm']);
 indexData('CMP軸方向の遊び（標準）','',CMP_AXIAL_STD,['モータ枠番','新品時']);
 indexData('CMP軸方向の遊び（スラスト）','',CMP_AXIAL_TB,['モータ枠番','新品時']);
 indexData('CMPg調整値','',CMP_GADJ,['モータ枠番','インペラ区分','g調整値']);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ベアリング等級
+const BRG_CLEARANCE = [
+  ['C1',  'かなり狭い（極小）',     'CNより隙間が狭く、ガタも極小',       '特殊な精密機器'],
+  ['C2',  '小さめ',                 '静かで精密機器向け',                 '小型精密モーターなど'],
+  ['CN',  '標準（一般使用）',       '一般的な産業機器に使用',             '産業機器など'],
+  ['C3',  'CNより大きい（一般使用）','高温になるモーターなど',             '高温産業機器・モーター'],
+  ['C4',  'C3より大きい',           '重荷重・かなり高温な機器',           '重荷重・高温機器'],
+  ['C5',  'C4より大きい',           '重荷重で大きなたわみのある機器',     '重荷重・大たわみ機器'],
+];
+const BRG_PRECISION = [
+  ['P0', '普通精度',            '家電、一般的な産業機器'],
+  ['P2', 'P0より寸法精度が厳しい', '一般的な産業機器'],
+  ['P4', 'P2より寸法精度が厳しい', '高速回転する産業機器'],
+  ['P5', 'P4より寸法精度が厳しい', '工作機械の主軸など'],
+  ['P6', 'P5より寸法精度が厳しい（最上級精度）', '超高速スピンドルなど'],
+];
+document.getElementById('brg-clearance-tbody').innerHTML = rows(BRG_CLEARANCE);
+document.getElementById('brg-precision-tbody').innerHTML  = rows(BRG_PRECISION);
+indexData('ベアリングすき間等級','',BRG_CLEARANCE,['等級','すき間','特徴','主な用途']);
+indexData('ベアリング精度等級','',BRG_PRECISION,['等級','特徴','主な用途']);
+
+// シール記号 [区分, 項目, シールド形非接触, シール形非接触, シール形接触, シール形低トルク]
+// 区分が空欄('')のときは直前の行と同じメーカー（rowspan省略）
+const BRG_SEAL = [
+  ['種類',         '材質・形状',  '金属シール板 内輪に非接触',  'ゴムシール板 内輪に非接触',  'ゴムシール板 内輪が接触',  'ゴムシール板 内輪が軽接触'],
+  ['性能',         '摩擦トルク',  '小',                        '小',                        '大',                       '中'],
+  ['',             '防塵・防水性','不適',                       '不適',                      '良好',                     '良好'],
+  ['',             '高速性',     '開放形と同等',               'シール耐熱による',           'シール耐熱による',          'シール耐熱による'],
+  ['NSK(日本精工)', '片シール',   'Z',   'V',    'DU',      'DW'],
+  ['',             '両シール',   'ZZ',  'VV',   'DDU',     'DDW'],
+  ['NTN',          '片シール',   'Z',   'LB',   'LU',      'LH'],
+  ['',             '両シール',   'ZZ',  'LLB',  'LLU',     'LLH'],
+  ['SKF',          '片シール',   'Z',   'RZ',   'RS',      'SL'],
+  ['',             '両シール',   'ZZ',  '2RZ',  '2RS1',    '2RSL'],
+  ['KOYO',         '片シール',   'Z',   'RU',   'RS,RK',   'RD'],
+  ['',             '両シール',   'ZZ',  '2RU',  '2RS,2RK', '2RD'],
+  ['NACHI(ナチ)',   '片シール',   'ZE',  'NKE',  'NSL,NSE', '-'],
+  ['',             '両シール',   'ZZE', '2NKE', '2NSL,2NSE','-'],
+];
+(function(){
+  let html = '';
+  let i = 0;
+  while (i < BRG_SEAL.length) {
+    const cat = BRG_SEAL[i][0];
+    if (cat === '') { i++; continue; } // 先読みで処理済み
+    // このカテゴリが続く行数を数える
+    let span = 1;
+    while (i + span < BRG_SEAL.length && BRG_SEAL[i + span][0] === '') span++;
+    for (let j = 0; j < span; j++) {
+      const r = BRG_SEAL[i + j];
+      html += '<tr>';
+      if (j === 0) html += `<td rowspan="${span}" style="background:#eef3fb;font-weight:600;text-align:center;vertical-align:middle;white-space:pre-line;">${cat}</td>`;
+      html += r.slice(1).map((v,k) => `<td${k===0?'':' style="text-align:center;"'}>${v}</td>`).join('');
+      html += '</tr>';
+    }
+    i += span;
+  }
+  document.getElementById('brg-seal-tbody').innerHTML = html;
+})();
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 単位換算表
