@@ -191,7 +191,7 @@
     background: #dce6f4;
     box-shadow: 2px 2px 4px rgba(0,0,0,.1);
   }
-  /* シール記号表：区分セルのみ左固定、項目セルは固定しない */
+  /* シール記号表：区分・項目の2列を左固定 */
   .tbl-seal td:first-child {
     position: static;
     box-shadow: none;
@@ -199,12 +199,29 @@
     font-weight: 400;
   }
   .tbl-seal td.cat-cell {
-    position: sticky; left: 0; z-index: 1;
+    position: sticky; left: 0; z-index: 2;
+    width: 64px; min-width: 64px; max-width: 64px;
     background: #eef3fb !important;
     font-weight: 600;
     text-align: center;
     vertical-align: middle;
     white-space: pre-line;
+  }
+  .tbl-seal td.item-cell {
+    position: sticky; left: 64px; z-index: 1;
+    background: #eef3fb;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 2px 0 4px rgba(0,0,0,.06);
+  }
+  .tbl-seal th.cat-th {
+    position: sticky; left: 0; z-index: 3;
+    width: 64px; min-width: 64px;
+    background: #dce6f4;
+  }
+  .tbl-seal th.item-th {
+    position: sticky; left: 64px; z-index: 3;
+    background: #dce6f4;
     box-shadow: 2px 0 4px rgba(0,0,0,.06);
   }
   .tbl-2col tr:nth-child(even) td:nth-child(2) { background: #e8eef8; }
@@ -1961,8 +1978,8 @@
             <table id="brg-seal-table">
               <thead>
                 <tr>
-                  <th rowspan="2">区分</th>
-                  <th rowspan="2">項目</th>
+                  <th class="cat-th" rowspan="2">区分</th>
+                  <th class="item-th" rowspan="2">項目</th>
                   <th>シールド形</th>
                   <th colspan="3">シール形</th>
                 </tr>
@@ -3171,7 +3188,7 @@ const BRG_SEAL = [
       const r = BRG_SEAL[i + j];
       html += '<tr>';
       if (j === 0) html += `<td rowspan="${span}" class="cat-cell">${cat}</td>`;
-      html += r.slice(1).map((v,k) => `<td${k===0?'':' style="text-align:center;"'}>${v}</td>`).join('');
+      html += r.slice(1).map((v,k) => k===0 ? `<td class="item-cell">${v}</td>` : `<td style="text-align:center;">${v}</td>`).join('');
       html += '</tr>';
     }
     i += span;
