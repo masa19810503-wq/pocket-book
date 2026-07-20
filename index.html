@@ -191,6 +191,22 @@
     background: #dce6f4;
     box-shadow: 2px 2px 4px rgba(0,0,0,.1);
   }
+  /* シール記号表：区分セルのみ左固定、項目セルは固定しない */
+  .tbl-seal td:first-child {
+    position: static;
+    box-shadow: none;
+    background: inherit;
+    font-weight: 400;
+  }
+  .tbl-seal td.cat-cell {
+    position: sticky; left: 0; z-index: 1;
+    background: #eef3fb !important;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    white-space: pre-line;
+    box-shadow: 2px 0 4px rgba(0,0,0,.06);
+  }
   .tbl-2col tr:nth-child(even) td:nth-child(2) { background: #e8eef8; }
   .tbl-2col tr:hover td:nth-child(2) { background: #dce8f7; }
 
@@ -1941,7 +1957,7 @@
       <div class="content-card">
         <div class="card-header">シールド形・シール形　記号一覧</div>
         <div class="card-body">
-          <div class="tbl-wrap">
+          <div class="tbl-wrap tbl-seal">
             <table id="brg-seal-table">
               <thead>
                 <tr>
@@ -3154,7 +3170,7 @@ const BRG_SEAL = [
     for (let j = 0; j < span; j++) {
       const r = BRG_SEAL[i + j];
       html += '<tr>';
-      if (j === 0) html += `<td rowspan="${span}" style="background:#eef3fb;font-weight:600;text-align:center;vertical-align:middle;white-space:pre-line;">${cat}</td>`;
+      if (j === 0) html += `<td rowspan="${span}" class="cat-cell">${cat}</td>`;
       html += r.slice(1).map((v,k) => `<td${k===0?'':' style="text-align:center;"'}>${v}</td>`).join('');
       html += '</tr>';
     }
