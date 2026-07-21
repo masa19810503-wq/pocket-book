@@ -1,5 +1,5 @@
-// ポケットブック Service Worker v4
-const CACHE = 'pocketbook-v4';
+// ポケットブック Service Worker v5
+const CACHE = 'pocketbook-v5';
 const ASSETS = [
   '/index.html',
   '/manifest.json',
