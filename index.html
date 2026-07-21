@@ -352,6 +352,9 @@
   <div class="nav-item" onclick="showPage('brg')" id="nav-brg">
     <span class="icon">⭕</span><span>ＢＲＧ</span>
   </div>
+  <div class="nav-item" onclick="showPage('calc')" id="nav-calc">
+    <span class="icon">🧮</span><span>計算機</span>
+  </div>
 </nav>
 
 <!-- Main -->
@@ -2310,6 +2313,44 @@
     </div>
   </div>
 
+  <!-- ━━ 配管重量計算機 ━━ -->
+  <div class="page" id="page-calc">
+    <div class="page-title">🧮 配管重量計算機</div>
+
+    <div class="content-card">
+      <div class="card-header">配　管</div>
+      <div class="card-body" style="padding:8px 12px;">
+        <div id="calc-pipe-body"></div>
+        <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;border-top:1px solid var(--border);padding-top:6px;margin-top:4px;">
+          <span style="font-size:12px;color:var(--muted);">配管重量　計</span>
+          <span id="calc-pipe-total" style="font-size:14px;font-weight:bold;min-width:72px;text-align:right;">－</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-card" style="margin-top:8px;">
+      <div class="card-header">フランジ</div>
+      <div class="card-body" style="padding:8px 12px;">
+        <div id="calc-flange-body"></div>
+        <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;border-top:1px solid var(--border);padding-top:6px;margin-top:4px;">
+          <span style="font-size:12px;color:var(--muted);">フランジ重量　計</span>
+          <span id="calc-flange-total" style="font-size:14px;font-weight:bold;min-width:72px;text-align:right;">－</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-card" style="margin-top:8px;">
+      <div class="card-header">合　計</div>
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
+          <span style="font-size:15px;font-weight:bold;">総重量</span>
+          <span id="calc-grand-total" style="font-size:22px;font-weight:bold;color:var(--accent);">－</span>
+        </div>
+        <p style="font-size:10px;color:var(--muted);margin-top:6px;">※配管重量は参考値（kg/m × 長さ）。フランジは単体重量 × 枚数。</p>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /main -->
 
 <script>
@@ -3735,6 +3776,142 @@ indexData('タップ下穴（W）','',TAP_W,['呼び','山数(ピッチ)','下�
 indexData('タップ下穴（Rc/PT）','',TAP_RC,['呼び','山数(ピッチ)','下穴サイズ']);
 indexData('タップ下穴（Rp/PS）','',TAP_RP,['呼び','山数(ピッチ)','下穴サイズ']);
 indexData('タップ下穴（G/PF）','',TAP_G,['呼び','山数(ピッチ)','下穴サイズ']);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 配管重量計算機
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const CALC_SCH = {
+  SUS: [{l:'Sch 10S',c:3},{l:'Sch 20S',c:4},{l:'Sch 40S',c:5},{l:'Sch 80S',c:6}],
+  CS:  [{l:'SGP',    c:3},{l:'Sch 20', c:4},{l:'Sch 40', c:5},{l:'Sch 80', c:6}]
+};
+const CALC_FL = {
+  '5K':    {d:()=>FW_5K,   a:0,w:[1,2]},
+  '10K':   {d:()=>FW_10K,  a:0,w:[1,2]},
+  '20K':   {d:()=>FW_20K,  a:0,w:[1,2]},
+  '30K':   {d:()=>FW_30K,  a:0,w:[1,2]},
+  '63K':   {d:()=>FW_63K,  a:0,w:[1,2]},
+  '150lb': {d:()=>FW_A150, a:1,w:[2,3]},
+  '300lb': {d:()=>FW_A300, a:1,w:[2,3]},
+  '600lb': {d:()=>FW_A600, a:1,w:[2,3]},
+  '900lb': {d:()=>FW_A900, a:1,w:[2,3]},
+  '1500lb':{d:()=>FW_A1500,a:1,w:[2,3]}
+};
+const _ss = 'padding:3px 2px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--fg);font-size:12px;';
+const _is = 'padding:3px 4px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--fg);font-size:12px;';
+
+function calcBuildUI() {
+  const nums = ['①','②','③','④'];
+
+  // 配管行
+  document.getElementById('calc-pipe-body').innerHTML = nums.map((n,i) => `
+<div style="margin-bottom:9px;padding-bottom:8px;border-bottom:1px solid var(--border);">
+  <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;">
+    <span style="font-size:13px;font-weight:bold;min-width:20px;">${n}</span>
+    <select style="${_ss}flex:1;" id="cp-mat-${i}" onchange="calcPipeUpd(${i})">
+      <option value="SUS">SUS</option><option value="CS">炭素鋼</option>
+    </select>
+    <select style="${_ss}flex:1.3;" id="cp-sch-${i}" onchange="calcDoAll()"></select>
+  </div>
+  <div style="display:flex;align-items:center;gap:4px;">
+    <span style="min-width:20px;"></span>
+    <select style="${_ss}flex:1;" id="cp-sz-${i}" onchange="calcDoAll()"></select>
+    <input type="number" id="cp-len-${i}" placeholder="長さ" min="0" step="0.1"
+      style="${_is}width:58px;" oninput="calcDoAll()">
+    <span style="font-size:11px;color:var(--muted);">m</span>
+    <span id="cp-w-${i}" style="font-size:12px;font-weight:bold;color:var(--accent);min-width:60px;text-align:right;">－</span>
+  </div>
+</div>`).join('');
+
+  // フランジ行
+  const cls0 = Object.keys(CALC_FL).map(c=>`<option value="${c}">${c}</option>`).join('');
+  document.getElementById('calc-flange-body').innerHTML = nums.map((n,i) => `
+<div style="margin-bottom:9px;padding-bottom:8px;border-bottom:1px solid var(--border);">
+  <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;">
+    <span style="font-size:13px;font-weight:bold;min-width:20px;">${n}</span>
+    <select style="${_ss}flex:1.2;" id="cf-cls-${i}" onchange="calcFlangeUpd(${i})">${cls0}</select>
+    <select style="${_ss}flex:0.9;" id="cf-type-${i}" onchange="calcDoAll()">
+      <option value="0">SOP/SO</option><option value="1">BL</option>
+    </select>
+  </div>
+  <div style="display:flex;align-items:center;gap:4px;">
+    <span style="min-width:20px;"></span>
+    <select style="${_ss}flex:1;" id="cf-sz-${i}" onchange="calcDoAll()"></select>
+    <input type="number" id="cf-qty-${i}" value="1" min="1" max="99"
+      style="${_is}width:42px;" oninput="calcDoAll()">
+    <span style="font-size:11px;color:var(--muted);">枚</span>
+    <span id="cf-w-${i}" style="font-size:12px;font-weight:bold;color:var(--accent);min-width:60px;text-align:right;">－</span>
+  </div>
+</div>`).join('');
+
+  for(let i=0;i<4;i++){ calcPipeUpd(i); calcFlangeUpd(i); }
+}
+
+function calcPipeUpd(i) {
+  const mat = document.getElementById(`cp-mat-${i}`).value;
+  const ss = CALC_SCH[mat];
+  document.getElementById(`cp-sch-${i}`).innerHTML = ss.map(s=>`<option value="${s.c}">${s.l}</option>`).join('');
+  const data = mat==='SUS'?SUS_WEIGHT:CS_WEIGHT;
+  document.getElementById(`cp-sz-${i}`).innerHTML = data.map(r=>`<option value="${r[1]}">${r[1]}A</option>`).join('');
+  calcDoAll();
+}
+
+function calcFlangeUpd(i) {
+  const cls = document.getElementById(`cf-cls-${i}`).value;
+  const cfg = CALC_FL[cls];
+  const data = cfg.d();
+  const isANSI = cls.endsWith('lb');
+  document.getElementById(`cf-sz-${i}`).innerHTML = data.map(r=>{
+    const a = r[cfg.a];
+    return `<option value="${a}">${isANSI?r[0]+'B('+a+'A)':a+'A'}</option>`;
+  }).join('');
+  calcDoAll();
+}
+
+function calcDoAll() {
+  let pSum=0, fSum=0, pOK=false, fOK=false;
+
+  for(let i=0;i<4;i++){
+    const wEl=document.getElementById(`cp-w-${i}`);
+    const len=parseFloat(document.getElementById(`cp-len-${i}`).value);
+    if(!len||len<=0){wEl.textContent='－';continue;}
+    const mat=document.getElementById(`cp-mat-${i}`).value;
+    const col=parseInt(document.getElementById(`cp-sch-${i}`).value);
+    const sz =document.getElementById(`cp-sz-${i}`).value;
+    const data=mat==='SUS'?SUS_WEIGHT:CS_WEIGHT;
+    const row=data.find(r=>String(r[1])===String(sz));
+    if(!row){wEl.textContent='－';continue;}
+    const wpm=parseFloat(row[col]);
+    if(isNaN(wpm)||wpm<=0){wEl.textContent='－';continue;}
+    const w=wpm*len;
+    wEl.textContent=w.toFixed(1)+' kg';
+    pSum+=w; pOK=true;
+  }
+
+  for(let i=0;i<4;i++){
+    const wEl=document.getElementById(`cf-w-${i}`);
+    const qty=parseInt(document.getElementById(`cf-qty-${i}`).value)||1;
+    const cls=document.getElementById(`cf-cls-${i}`).value;
+    const ti =parseInt(document.getElementById(`cf-type-${i}`).value);
+    const sz =document.getElementById(`cf-sz-${i}`).value;
+    const cfg=CALC_FL[cls];
+    const data=cfg.d();
+    const row=data.find(r=>String(r[cfg.a])===String(sz));
+    if(!row){wEl.textContent='－';continue;}
+    const val=row[cfg.w[ti]];
+    if(val==='－'||val==='-'){wEl.textContent='－';continue;}
+    const w=parseFloat(val);
+    if(isNaN(w)){wEl.textContent='－';continue;}
+    const total=w*qty;
+    wEl.textContent=total.toFixed(1)+' kg';
+    fSum+=total; fOK=true;
+  }
+
+  document.getElementById('calc-pipe-total').textContent  =pOK        ?pSum.toFixed(1)+' kg'           :'－';
+  document.getElementById('calc-flange-total').textContent=fOK        ?fSum.toFixed(1)+' kg'           :'－';
+  document.getElementById('calc-grand-total').textContent =(pOK||fOK) ?(pSum+fSum).toFixed(1)+' kg'   :'－';
+}
+
+calcBuildUI();
 </script>
 <script>
 // PWA installed
