@@ -6,7 +6,8 @@ const ASSETS = [
   '/icon-192.png',
   '/icon-512.png',
   '/nylon-sling-chart.png',
-  '/shackle-diagram.png'
+  '/shackle-diagram.png',
+  '/gasket-section.png'
 ];
 
 self.addEventListener('install', e => {

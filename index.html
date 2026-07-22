@@ -939,11 +939,114 @@
     <div class="page-title">⬡ ガスケット</div>
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab(this,'gasket','flat')">T/＃1120<br>V/＃7030</button>
+      <button class="tab-btn" onclick="switchTab(this,'gasket','wzref')">うず巻<br>参考</button>
       <button class="tab-btn" onclick="switchTab(this,'gasket','v8596')">V/＃8596<br>内外輪付</button>
       <button class="tab-btn" onclick="switchTab(this,'gasket','v8591')">V/＃8591<br>外輪付</button>
       <button class="tab-btn" onclick="switchTab(this,'gasket','v8592')">V/＃8592<br>内輪付</button>
       <button class="tab-btn" onclick="switchTab(this,'gasket','v8590')">V/＃8590<br>基本形</button>
     </div>
+
+    <!-- うず巻形ガスケット 参考 -->
+    <div class="tab-pane" id="gasket-tab-wzref">
+
+      <!-- 断面図 -->
+      <div class="content-card">
+        <div class="card-header">うず巻形ガスケット 断面図</div>
+        <div class="card-body" style="text-align:center;">
+          <img src="gasket-section.png" alt="うず巻形ガスケット断面図" style="max-width:100%;max-height:220px;height:auto;display:inline-block;">
+        </div>
+      </div>
+
+      <!-- 種類表 -->
+      <div class="content-card" style="margin-top:8px;">
+        <div class="card-header">■ 種類（バルカー製）</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table style="font-size:11px;"><thead>
+              <tr>
+                <th rowspan="2" style="text-align:left;">名　称</th>
+                <th rowspan="2">フィラー材</th>
+                <th>基本形</th>
+                <th>外輪付</th>
+                <th>内輪付</th>
+                <th>内外輪付</th>
+              </tr>
+              <tr>
+                <th style="font-size:9px;color:var(--muted);">━━</th>
+                <th style="font-size:9px;color:var(--muted);">━━〇</th>
+                <th style="font-size:9px;color:var(--muted);">〇━━</th>
+                <th style="font-size:9px;color:var(--muted);">〇━━〇</th>
+              </tr>
+            </thead><tbody>
+              <tr>
+                <td>ブラックタイト</td>
+                <td>バルカホイル<br>（膨張黒鉛）</td>
+                <td>No.6590</td><td>No.6591<sup>※1</sup></td><td>No.6592</td><td>No.6596</td>
+              </tr>
+              <tr>
+                <td>ホワイトタイト</td>
+                <td>バルフロン<br>(PTFE)</td>
+                <td>No.7590</td><td>No.7591<sup>※1</sup></td><td>No.7592</td><td>No.7596</td>
+              </tr>
+              <tr>
+                <td>クリーンタイト</td>
+                <td>無機質紙</td>
+                <td>No.8590</td><td>No.8591</td><td>No.8592</td><td>No.8596</td>
+              </tr>
+              <tr>
+                <td>ライン入り<br>クリーンタイト</td>
+                <td>無機質紙<br>＋バルカホイル</td>
+                <td>No.8590L</td><td>No.8591L</td><td>No.8592L</td><td>No.8596L</td>
+              </tr>
+              <tr>
+                <td>マイカフィラー<br>うず巻形ガスケット</td>
+                <td>マイカ</td>
+                <td>No.M590</td><td>No.M591</td><td>No.M592</td><td>No.M596</td>
+              </tr>
+              <tr>
+                <td>ライン入り<br>マイカフィラー<br>うず巻形ガスケット</td>
+                <td>マイカ<br>＋バルカホイル</td>
+                <td>No.M590L</td><td>No.M591L</td><td>No.M592L</td><td>No.M596L</td>
+              </tr>
+              <tr>
+                <td>バルカーヒート<br>レジストフィラー<br>うず巻形ガスケット</td>
+                <td>バルカー<br>ヒートレジスト<br>シート</td>
+                <td>No.H590</td><td>No.H591</td><td>No.H592</td><td>No.H596</td>
+              </tr>
+            </tbody></table>
+          </div>
+          <p style="font-size:10px;color:var(--muted);margin-top:6px;">※1 No.6591・No.7591は内径側に異常変形を起こす恐れがあるため、できるだけ内外輪付を使用してください。</p>
+        </div>
+      </div>
+
+      <!-- 選定指針 -->
+      <div class="content-card" style="margin-top:8px;">
+        <div class="card-header">■ 選定指針：ガスケット形状とガスケット座の適合性</div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table style="font-size:12px;text-align:center;"><thead>
+              <tr>
+                <th style="text-align:left;">ガスケット<br>形状</th>
+                <th>平面座</th>
+                <th>全面座</th>
+                <th>はめ込み形</th>
+                <th>溝形</th>
+              </tr>
+            </thead><tbody>
+              <tr><td style="text-align:left;">基本形</td>   <td>－</td>         <td>－</td>         <td>△<sup>※2</sup></td><td>○</td></tr>
+              <tr><td style="text-align:left;">外輪付</td>   <td>△<sup>※2</sup></td><td>△<sup>※2</sup></td><td>－</td>         <td>－</td></tr>
+              <tr><td style="text-align:left;">内輪付</td>   <td>－</td>         <td>－</td>         <td>○</td>         <td>△</td></tr>
+              <tr><td style="text-align:left;">内外輪付</td> <td>○</td>         <td>△</td>         <td>－</td>         <td>－</td></tr>
+            </tbody></table>
+          </div>
+          <p style="font-size:10px;color:var(--muted);margin-top:6px;">
+            ○：適用する　△：適用する場合がある　－：適用しない<br>
+            ※2 ガスケット内径部の異常変形が考えられるため内外輪を付けることを推奨します。
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /gasket-tab-wzref -->
 
     <!-- T/#1120・V/#7030 平形ガスケット -->
     <div class="tab-pane active" id="gasket-tab-flat">
