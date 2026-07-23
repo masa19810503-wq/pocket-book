@@ -11,7 +11,9 @@ const ASSETS = [
   '/flange-rf.jpeg',
   '/flange-ff.jpeg',
   '/flange-mf.jpeg',
-  '/flange-tg.jpeg'
+  '/flange-tg.jpeg',
+  '/loctite-1.png',
+  '/loctite-2.png'
 ];
 
 self.addEventListener('install', e => {

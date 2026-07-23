@@ -352,6 +352,9 @@
   <div class="nav-item" onclick="showPage('brg')" id="nav-brg">
     <span class="icon">⭕</span><span>ＢＲＧ</span>
   </div>
+  <div class="nav-item" onclick="showPage('loctite')" id="nav-loctite">
+    <span class="icon">🔴</span><span>ロック<br>タイト</span>
+  </div>
   <div class="nav-item" onclick="showPage('calc')" id="nav-calc">
     <span class="icon">🧮</span><span>計算機</span>
   </div>
@@ -440,6 +443,11 @@
         <span class="sc-icon">⭕</span>
         <span class="sc-title">ベアリング</span>
         <span class="sc-sub">すき間等級・精度等級</span>
+      </div>
+      <div class="section-card" onclick="showPage('loctite')">
+        <span class="sc-icon">🔴</span>
+        <span class="sc-title">ロックタイト</span>
+        <span class="sc-sub">はめ合い用・ネジ用</span>
       </div>
       <div class="section-card" onclick="showPage('calc')">
         <span class="sc-icon">🧮</span>
@@ -2458,6 +2466,41 @@
               <thead><tr><th>呼び</th><th>山数（ピッチmm）</th><th>下穴サイズ</th></tr></thead>
               <tbody id="tap-g-tbody"></tbody>
             </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ━━ ロックタイト ━━ -->
+  <div class="page" id="page-loctite">
+    <div class="page-title">🔴 ロックタイト</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'loctite','fit')">はめ合い用</button>
+      <button class="tab-btn" onclick="switchTab(this,'loctite','screw')">ネジ用</button>
+    </div>
+
+    <!-- はめ合い用 -->
+    <div class="tab-pane active" id="loctite-tab-fit">
+      <div class="content-card">
+        <div class="card-header">ロックタイト〈はめ合い用〉</div>
+        <div class="card-body" style="padding:8px;">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">軸受・スリーブ・キー等のはめ合い固定に使用します。</p>
+          <div style="overflow-x:auto;">
+            <img src="loctite-1.png" alt="ロックタイト はめ合い用" style="max-width:100%;height:auto;display:block;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ネジ用 -->
+    <div class="tab-pane" id="loctite-tab-screw">
+      <div class="content-card">
+        <div class="card-header">ロックタイト〈ネジ用〉</div>
+        <div class="card-body" style="padding:8px;">
+          <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">ねじのゆるみ止め・固定に使用します。×：取外し不可（加熱要）　○：取外し可</p>
+          <div style="overflow-x:auto;">
+            <img src="loctite-2.png" alt="ロックタイト ネジ用" style="max-width:100%;height:auto;display:block;">
           </div>
         </div>
       </div>
