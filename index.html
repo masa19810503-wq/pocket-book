@@ -567,7 +567,8 @@
   <div class="page" id="page-flange">
     <div class="page-title">⭕ フランジ寸法表</div>
     <div class="tab-bar">
-      <button class="tab-btn active" onclick="switchTab(this,'flange','5k')">JIS 5k</button>
+      <button class="tab-btn active" onclick="switchTab(this,'flange','shape')">形状<br>説明</button>
+      <button class="tab-btn" onclick="switchTab(this,'flange','5k')">JIS 5k</button>
       <button class="tab-btn" onclick="switchTab(this,'flange','10k')">JIS 10k</button>
       <button class="tab-btn" onclick="switchTab(this,'flange','20k')">JIS 20k</button>
       <button class="tab-btn" onclick="switchTab(this,'flange','30k')">JIS 30k</button>
@@ -578,8 +579,46 @@
       <button class="tab-btn" onclick="switchTab(this,'flange','a900')">ANSI 900lb</button>
       <button class="tab-btn" onclick="switchTab(this,'flange','a1500')">ANSI 1500lb</button>
     </div>
+    <!-- フランジ形状説明 -->
+    <div class="tab-pane active" id="flange-tab-shape">
+      <div class="content-card">
+        <div class="card-header">フランジ 座面形状の種類</div>
+        <div class="card-body">
+
+          <!-- RF -->
+          <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+            <div style="font-size:14px;font-weight:bold;margin-bottom:6px;">① 平面座（RF：Raised Face）</div>
+            <img src="flange-rf.jpeg" alt="平面座RF" style="max-width:100%;max-height:160px;height:auto;display:block;margin-bottom:6px;">
+            <p style="font-size:12px;line-height:1.6;">平面座は一般的に使用される形状のフランジです。</p>
+          </div>
+
+          <!-- FF -->
+          <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+            <div style="font-size:14px;font-weight:bold;margin-bottom:6px;">② 全面座（FF：Flat Face）</div>
+            <img src="flange-ff.jpeg" alt="全面座FF" style="max-width:100%;max-height:160px;height:auto;display:block;margin-bottom:6px;">
+            <p style="font-size:12px;line-height:1.6;">全面座はフランジ面がフラットな形状をしています。</p>
+          </div>
+
+          <!-- MF -->
+          <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+            <div style="font-size:14px;font-weight:bold;margin-bottom:6px;">③ はめ込み形（MF：Male-Female）</div>
+            <img src="flange-mf.jpeg" alt="はめ込み形MF" style="max-width:100%;max-height:160px;height:auto;display:block;margin-bottom:6px;">
+            <p style="font-size:12px;line-height:1.6;">凸型のメール座（MF-M）と凹型のフィメール座（MF-F）に分かれており、ガスケットを挟み込むようになっています。</p>
+          </div>
+
+          <!-- TG -->
+          <div>
+            <div style="font-size:14px;font-weight:bold;margin-bottom:6px;">④ 溝形（TG：Tongue and Groove）</div>
+            <img src="flange-tg.jpeg" alt="溝形TG" style="max-width:100%;max-height:160px;height:auto;display:block;margin-bottom:6px;">
+            <p style="font-size:12px;line-height:1.6;">凸型のタング座（TG-T）と凹型のグルーブ座（TG-G）に分かれており、ガスケットを挟み込むようになっています。</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <!-- 5k -->
-    <div class="tab-pane active" id="flange-tab-5k">
+    <div class="tab-pane" id="flange-tab-5k">
       <div class="content-card">
         <div class="card-header">フランジ 5k（単位：mm）</div>
         <div class="card-body">

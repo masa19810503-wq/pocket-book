@@ -7,7 +7,11 @@ const ASSETS = [
   '/icon-512.png',
   '/nylon-sling-chart.png',
   '/shackle-diagram.png',
-  '/gasket-section.png'
+  '/gasket-section.png',
+  '/flange-rf.jpeg',
+  '/flange-ff.jpeg',
+  '/flange-mf.jpeg',
+  '/flange-tg.jpeg'
 ];
 
 self.addEventListener('install', e => {
